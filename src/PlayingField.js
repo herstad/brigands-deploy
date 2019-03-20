@@ -9,7 +9,12 @@ class PlayingField extends Component {
     return <div className="PlayingField">
       <table>
         <tbody>
-        {matrix.map(row => <tr key={row[0].x}>{row.map(elem => <td key={'x' + elem.x + 'y' +elem.y}>{elem.type}</td>)}</tr>)}
+        {matrix.map(row =>
+          <tr key={row[0].y}>{row.map(elem =>
+            <td key={'x' + elem.x + 'y' + elem.y}>
+              <button onClick={this.props.genSelectOnClick(elem)}>{elem.type}</button>
+            </td>)}
+          </tr>)}
         </tbody>
       </table>
     </div>;
