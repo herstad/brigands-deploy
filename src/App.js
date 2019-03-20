@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './App.css';
 import PlayingField from './PlayingField';
 import Orders from './Orders';
+import InfoPane from './InfoPane';
 
 class App extends Component {
 
@@ -17,6 +18,7 @@ class App extends Component {
   render() {
     return (
       <div className="App">
+        <InfoPane item={this.state.items[0]}/>
         <PlayingField size="10" items={this.state.items}/>
         <Orders moveOnClick={this.moveOnClick}/>
       </div>
