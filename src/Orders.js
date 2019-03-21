@@ -12,7 +12,14 @@ class Orders extends Component {
           )
         }}
       </BrigandContext.Consumer>
-      <button onClick={this.props.moveOnClick}>Move</button>
+      <BrigandContext.Consumer>
+        {({moveRight}) => {
+          return (
+            <button onClick={moveRight}>MoveRight</button>
+          )
+        }}
+      </BrigandContext.Consumer>
+
     </div>
   }
 }

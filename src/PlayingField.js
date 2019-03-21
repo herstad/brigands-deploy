@@ -1,20 +1,23 @@
 import React, {Component} from 'react';
+import BrigandContext from "./BrigandContext";
 
 class PlayingField extends Component {
 
   render() {
 
-    const matrix = this.createMatrix(10, this.props.items);
-
     return <div className="PlayingField">
       <table>
         <tbody>
-        {matrix.map(row =>
-          <tr key={row[0].y}>{row.map(elem =>
+        <BrigandContext.Consumer>
+          {({items,setSelected}) => {
+            return (this.createMatrix(10, items).map(row =>
+            <tr key={row[0].y}>{row.map(elem =>
             <td key={'x' + elem.x + 'y' + elem.y}>
-              <button onClick={this.props.genSelectOnClick(elem)}>{elem.type}</button>
+              <button onClick={()=>setSelected(elem)}>{elem.type}</button>
             </td>)}
-          </tr>)}
+            </tr>))
+          }}
+        </BrigandContext.Consumer>
         </tbody>
       </table>
     </div>;
