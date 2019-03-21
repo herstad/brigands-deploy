@@ -3,12 +3,13 @@ import './App.css';
 import PlayingField from './PlayingField';
 import Orders from './Orders';
 import InfoPane from './InfoPane';
+import ContextProvider from "./ContextProvider";
 
 class App extends Component {
 
 
-  constructor(props) {
-    super(props);
+  constructor(props, context) {
+    super(props, context);
 
     const items = [{x: 1, y: 2, type: 'x'}, {x: 0, y: 0, type: 'o'}];
     this.state = {items: items, selected: items[0]};
@@ -19,9 +20,12 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <InfoPane item={this.state.selected}/>
-        <PlayingField size="10" items={this.state.items} genSelectOnClick={this.genSelectOnClick}/>
-        <Orders moveOnClick={this.moveOnClick}/>
+        <ContextProvider>
+          <InfoPane item={this.state.selected}/>
+          <PlayingField size="10" items={this.state.items}
+                        genSelectOnClick={this.genSelectOnClick}/>
+          <Orders moveOnClick={this.moveOnClick}/>
+        </ContextProvider>
       </div>
     );
   }
