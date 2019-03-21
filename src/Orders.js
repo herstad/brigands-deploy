@@ -13,13 +13,19 @@ class Orders extends Component {
         }}
       </BrigandContext.Consumer>
       <BrigandContext.Consumer>
-        {({moveRight}) => {
+        {({moveTowardEnemy}) => {
           return (
-            <button onClick={moveRight}>MoveRight</button>
+            <button onClick={moveTowardEnemy}>MoveTowardEnemy</button>
           )
         }}
       </BrigandContext.Consumer>
-
+      <BrigandContext.Consumer>
+        {({moveAwayFromEnemy}) => {
+          return (
+            <button onClick={moveAwayFromEnemy}>MoveAwayFromEnemy</button>
+          )
+        }}
+      </BrigandContext.Consumer>
     </div>
   }
 }
