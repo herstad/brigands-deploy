@@ -4,7 +4,7 @@ import BrigandContext from './BrigandContext';
 export default class ContextProvider extends Component {
   state = {
     count: 0,
-    items: [{x: 1, y: 2, type: 'x'}, {x: 0, y: 0, type: 'o'}],
+    items: [{id:0, x: 1, y: 2, hp:5, type: 'x'}, {id:1, x: 0, y: 0, hp:5, type: 'o'}],
     selected: undefined,
   };
 
@@ -29,26 +29,26 @@ export default class ContextProvider extends Component {
     const [brigand, enemy] = state.items;
     const xd = enemy.x - brigand.x;
     const yd = enemy.y - brigand.y;
-    return Math.abs(xd) > Math.abs(yd) ? {x: Math.sign(xd), y:0} : {x: 0, y: Math.sign(yd)};
+    return Math.abs(xd) > Math.abs(yd) ? {x: Math.sign(xd), y: 0} : {x: 0, y: Math.sign(yd)};
   };
 
   awayFromEnemy = (state) => {
-    const {x,y} = this.towardEnemy(state);
-    return {x: x*-1, y:y*-1};
+    const {x, y} = this.towardEnemy(state);
+    return {x: x * -1, y: y * -1};
   };
 
   move = (direction) => {
     this.setState((state) => {
-      const {x,y} = direction(state);
-      const [mover, ...rest] = state.items;
-      const moved = Object.assign({}, mover);
-      moved.x = mover.x + x;
-      moved.y = mover.y + y;
-      console.log('clicked moveOnClick. x: ' + x + 'y: ' + y);
-      console.log('clicked moveOnClick. moved.x: ' + moved.x + 'moved.y: ' + moved.y);
-      return {items: [moved, ...rest]};
+      const {x, y} = direction(state);
+      const id= state.items[0].id;
+      const test=  state.items.map(el => (el.id === id ? { ...el, x: (el.x +x), y: (el.y + y)} : el));
+      return {items: test};
     });
-  }
+  };
+
+  inRange = (attacker, target, range = 1) => {
+    return Math.abs(target.x - attacker.x) + Math.abs(target.y - attacker.y) <= range;
+  };
 
   render() {
     const {count, items, selected} = this.state;
