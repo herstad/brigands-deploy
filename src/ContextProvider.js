@@ -9,8 +9,19 @@ export default class ContextProvider extends Component {
   };
 
   addOne = () => {
-    this.setState(state => ({count: state.count + 1}))
+    this.setState(state => ({count: state.count + 1}));
+    this.aiTurn();
   };
+
+  aiTurn = () => {
+    this.update(0, (item, state) => {
+      if (this.inRange(state.items[1], state.items[0])) {
+        return ({hp: item.hp - 1})
+      }
+      return {};
+    });
+  };
+
 
   setSelected = (selected) => {
     console.log('setSelected x:' + selected.x);
@@ -38,11 +49,11 @@ export default class ContextProvider extends Component {
   };
 
   move = (direction) => {
-    return this.update(0, (item,state) => this.moveFn(item, direction(state)));
+    return this.update(0, (item, state) => this.moveFn(item, direction(state)));
   };
 
   attack = () => {
-    this.update(1, (item)=>({hp:item.hp - 1}));
+    this.update(1, (item) => ({hp: item.hp - 1}));
   };
 
   update = (id, updateFn) => {
@@ -73,7 +84,7 @@ export default class ContextProvider extends Component {
       moveTowardEnemy: this.moveTowardEnemy,
       moveAwayFromEnemy: this.moveAwayFromEnemy,
       attack: this.attack,
-      inRange:this.inRange,
+      inRange: this.inRange,
       items,
       selected,
       setSelected: this.setSelected
