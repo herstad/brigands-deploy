@@ -10,10 +10,10 @@ class InfoPane extends Component {
           if (!selected) {
             return undefined;
           }
-          const {x,y,type} = selected;
+          const {x, y, hp, type} = selected;
           return (
             <div>
-              <span>x:{x}</span><span>y:{y}</span><span>type:{type}</span>
+              <span>x:{x}</span><span>y:{y}</span><span>hp:{hp}</span><span>type:{type}</span>
             </div>
           )
         }}

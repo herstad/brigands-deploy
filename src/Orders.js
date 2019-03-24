@@ -26,6 +26,11 @@ class Orders extends Component {
           )
         }}
       </BrigandContext.Consumer>
+      <BrigandContext.Consumer>
+        {({attack, inRange, items}) => {
+          return (inRange(items[0], items[1]) ? <button onClick={attack}>Attack!</button> : undefined)
+        }}
+      </BrigandContext.Consumer>
     </div>
   }
 }
