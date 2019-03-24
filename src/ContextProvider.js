@@ -14,14 +14,21 @@ export default class ContextProvider extends Component {
   };
 
   aiTurn = () => {
-    this.update(0, (item, state) => {
-      if (this.inRange(state.items[1], state.items[0])) {
+    this.update(this.matchType('x'), (item, state) => {
+      if (this.inRange(this.getItemByType('o', state), item)) {
+        console.log('ai attack');
         return ({hp: item.hp - 1})
       }
       return {};
     });
+    this.update(this.matchType('o'), (item, state) => {
+      if (!this.inRange(item, this.getItemByType('x', state))) {
+        console.log('ai move');
+        return this.moveFn(item, this.toward(item, this.getItemByType('x', state)))
+      }
+      return {};
+    });
   };
-
 
   setSelected = (selected) => {
     console.log('setSelected x:' + selected.x);
@@ -38,8 +45,12 @@ export default class ContextProvider extends Component {
 
   towardEnemy = (state) => {
     const [brigand, enemy] = state.items;
-    const xd = enemy.x - brigand.x;
-    const yd = enemy.y - brigand.y;
+    return this.toward(brigand, enemy);
+  };
+
+  toward = (attacker, target) => {
+    const xd = target.x - attacker.x;
+    const yd = target.y - attacker.y;
     return Math.abs(xd) > Math.abs(yd) ? {x: Math.sign(xd), y: 0} : {x: 0, y: Math.sign(yd)};
   };
 
@@ -49,22 +60,23 @@ export default class ContextProvider extends Component {
   };
 
   move = (direction) => {
-    return this.update(0, (item, state) => this.moveFn(item, direction(state)));
+    return this.update(this.matchId(0), (item, state) => this.moveFn(item, direction(state)));
   };
 
   attack = () => {
-    this.update(1, (item) => ({hp: item.hp - 1}));
+    this.update(this.matchId(1), (item) => ({hp: item.hp - 1}));
   };
 
-  update = (id, updateFn) => {
+  update = (predicate, updateFn) => {
     this.setState((state) => {
-      const items = state.items.map(this.updateItem(id, (item) => updateFn(item, state)));
+      const items = state.items.map(this.updateItem(predicate, updateFn, state));
       return {items};
     });
   };
 
-  updateItem(id, updateFn) {
-    return el => (el.id === id ? {...el, ...updateFn(el)} : el);
+
+  updateItem(predicate, updateFn, state) {
+    return el => (predicate(el, state) ? {...el, ...updateFn(el, state)} : el);
   }
 
   moveFn(item, {x, y}) {
@@ -74,6 +86,19 @@ export default class ContextProvider extends Component {
   inRange = (attacker, target, range = 1) => {
     return Math.abs(target.x - attacker.x) + Math.abs(target.y - attacker.y) <= range;
   };
+
+  matchId = (id)=> {
+    return (item) =>item.id === id;
+  };
+
+  matchType = (type)=> {
+    return (item) =>item.type === type;
+  };
+
+  getItemById = (id, state) => state.items.find((item) =>item.id === id);
+
+  getItemByType = (type, state) => state.items.find((item) =>item.type === type);
+
 
   render() {
     const {count, items, selected} = this.state;
