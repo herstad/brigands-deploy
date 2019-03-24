@@ -14,19 +14,13 @@ export default class ContextProvider extends Component {
   };
 
   aiTurn = () => {
-    this.update(this.matchType('x'), (item, state) => {
-      if (this.inRange(this.getItemByType('o', state), item)) {
-        console.log('ai attack');
-        return ({hp: item.hp - 1})
-      }
-      return {};
+    this.update(((item, state) => item.type === 'x' && this.inRange(this.getItemByType('o', state), item)), (item) => {
+      console.log('ai attack');
+      return ({hp: item.hp - 1})
     });
-    this.update(this.matchType('o'), (item, state) => {
-      if (!this.inRange(item, this.getItemByType('x', state))) {
-        console.log('ai move');
-        return this.moveFn(item, this.toward(item, this.getItemByType('x', state)))
-      }
-      return {};
+    this.update(((item, state) => item.type === 'o' && !this.inRange(this.getItemByType('x', state), item)), (item, state) => {
+      console.log('ai move');
+      return this.moveFn(item, this.toward(item, this.getItemByType('x', state)));
     });
   };
 
@@ -87,17 +81,17 @@ export default class ContextProvider extends Component {
     return Math.abs(target.x - attacker.x) + Math.abs(target.y - attacker.y) <= range;
   };
 
-  matchId = (id)=> {
-    return (item) =>item.id === id;
+  matchId = (id) => {
+    return (item) => item.id === id;
   };
 
-  matchType = (type)=> {
-    return (item) =>item.type === type;
+  matchType = (type) => {
+    return (item) => item.type === type;
   };
 
-  getItemById = (id, state) => state.items.find((item) =>item.id === id);
+  getItemById = (id, state) => state.items.find((item) => item.id === id);
 
-  getItemByType = (type, state) => state.items.find((item) =>item.type === type);
+  getItemByType = (type, state) => state.items.find((item) => item.type === type);
 
 
   render() {
