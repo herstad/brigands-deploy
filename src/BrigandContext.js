@@ -1,11 +1,23 @@
 import React from 'react';
 
 const BrigandContext = React.createContext({
-  addOne(){},
-  counter: 0,
+
+  turn: 0,
+  ap: 1,
   items: [],
-  selected:undefined,
-  setSelected(selected){},
+  selected: undefined,
+  endTurn() {
+  },
+  setSelected(selected) {
+  },
+  moveTowardEnemy() {
+  },
+  moveAwayFromEnemy() {
+  },
+  attack() {
+  },
+  inRange() {
+  },
 });
 
 export default BrigandContext;

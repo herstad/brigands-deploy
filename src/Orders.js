@@ -6,29 +6,27 @@ class Orders extends Component {
   render() {
     return <div>
       <BrigandContext.Consumer>
-        {({addOne, count}) => {
+        {({endTurn, turn}) => {
           return (
-            <button onClick={addOne}>Turn: {count}</button>
+            <button onClick={endTurn}>Turn: {turn}</button>
           )
         }}
       </BrigandContext.Consumer>
       <BrigandContext.Consumer>
-        {({moveTowardEnemy}) => {
-          return (
-            <button onClick={moveTowardEnemy}>MoveTowardEnemy</button>
-          )
+        {({moveTowardEnemy, ap}) => {
+          return ((ap > 0) ? <button onClick={moveTowardEnemy}>MoveTowardEnemy</button> : undefined)
         }}
       </BrigandContext.Consumer>
       <BrigandContext.Consumer>
-        {({moveAwayFromEnemy}) => {
-          return (
-            <button onClick={moveAwayFromEnemy}>MoveAwayFromEnemy</button>
-          )
+        {({moveAwayFromEnemy, ap}) => {
+          return ((ap > 0) ?
+            <button onClick={moveAwayFromEnemy}>MoveAwayFromEnemy</button> : undefined)
         }}
       </BrigandContext.Consumer>
       <BrigandContext.Consumer>
-        {({attack, inRange, items}) => {
-          return (inRange(items[0], items[1]) ? <button onClick={attack}>Attack!</button> : undefined)
+        {({attack, inRange, items, ap}) => {
+          return (ap > 0 && inRange(items[0], items[1]) ?
+            <button onClick={attack}>Attack!</button> : undefined)
         }}
       </BrigandContext.Consumer>
     </div>

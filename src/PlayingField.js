@@ -9,13 +9,13 @@ class PlayingField extends Component {
       <table>
         <tbody>
         <BrigandContext.Consumer>
-          {({items,setSelected}) => {
+          {({items, setSelected}) => {
             return (this.createMatrix(10, items).map(row =>
-            <tr key={row[0].y}>{row.map(elem =>
-            <td key={'x' + elem.x + 'y' + elem.y}>
-              <button onClick={()=>setSelected(elem)}>{elem.type}</button>
-            </td>)}
-            </tr>))
+              <tr key={row[0].y}>{row.map(elem =>
+                <td key={'x' + elem.x + 'y' + elem.y}>
+                  <button onClick={() => setSelected(elem)}>{elem.type}</button>
+                </td>)}
+              </tr>))
           }}
         </BrigandContext.Consumer>
         </tbody>

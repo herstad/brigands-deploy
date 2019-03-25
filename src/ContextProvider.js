@@ -3,14 +3,16 @@ import BrigandContext from './BrigandContext';
 
 export default class ContextProvider extends Component {
   state = {
-    count: 0,
+    turn: 0,
+    ap:1,
     items: [{id: 0, x: 1, y: 2, hp: 5, type: 'x'}, {id: 1, x: 0, y: 0, hp: 5, type: 'o'}],
     selected: undefined,
   };
 
-  addOne = () => {
-    this.setState(state => ({count: state.count + 1}));
+  endTurn = () => {
+    this.setState(state => ({turn: state.turn + 1, ap:1}));
     this.aiTurn();
+    this.setState(() => ({ap:1}));
   };
 
   aiTurn = () => {
@@ -64,10 +66,10 @@ export default class ContextProvider extends Component {
   update = (predicate, updateFn) => {
     this.setState((state) => {
       const items = state.items.map(this.updateItem(predicate, updateFn, state));
-      return {items};
+      console.log("ap " + state.ap);
+      return {items, ap: state.ap - 1 };
     });
   };
-
 
   updateItem(predicate, updateFn, state) {
     return el => (predicate(el, state) ? {...el, ...updateFn(el, state)} : el);
@@ -95,11 +97,12 @@ export default class ContextProvider extends Component {
 
 
   render() {
-    const {count, items, selected} = this.state;
+    const {turn, ap, items, selected} = this.state;
 
     const value = {
-      addOne: this.addOne,
-      count,
+      endTurn: this.endTurn,
+      turn,
+      ap,
       moveTowardEnemy: this.moveTowardEnemy,
       moveAwayFromEnemy: this.moveAwayFromEnemy,
       attack: this.attack,
