@@ -1,5 +1,9 @@
 import React, {Component} from 'react';
 import BrigandContext from "./BrigandContext";
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import Typography from '@material-ui/core/Typography';
+import LinearProgress from '@material-ui/core/LinearProgress';
 
 class InfoPane extends Component {
   render() {
@@ -11,10 +15,19 @@ class InfoPane extends Component {
             return undefined;
           }
           const {x, y, hp, type} = selected;
+          const maxHp = 5;
+          const relativeHp = hp / maxHp * 100;
+
           return (
-            <div>
-              <span>x:{x}</span><span>y:{y}</span><span>hp:{hp}</span><span>type:{type}</span>
-            </div>
+            <Card>
+              <CardContent>
+                <Typography>x:{x}</Typography>
+                <Typography>y:{y}</Typography>
+                <Typography>hp:{hp}</Typography>
+                <Typography>type:{type}</Typography>
+                <LinearProgress variant="determinate" value={relativeHp}/>
+              </CardContent>
+            </Card>
           )
         }}
       </BrigandContext.Consumer>
