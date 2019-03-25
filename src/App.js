@@ -4,17 +4,28 @@ import PlayingField from './PlayingField';
 import Orders from './Orders';
 import InfoPane from './InfoPane';
 import ContextProvider from "./ContextProvider";
+import CssBaseline from '@material-ui/core/CssBaseline';
+import Grid from '@material-ui/core/Grid';
 
 class App extends Component {
 
   render() {
     return (
       <div className="App">
-        <ContextProvider>
-          <InfoPane/>
-          <PlayingField size="10"/>
-          <Orders/>
-        </ContextProvider>
+        <CssBaseline/>
+        <Grid container justify="center" direction="row" spacing={24}>
+          <ContextProvider>
+            <Grid item xs={4}>
+              <InfoPane/>
+            </Grid>
+            <Grid item xs={4}>
+              <PlayingField size="10"/>
+            </Grid>
+            <Grid item xs={4}>
+              <Orders/>
+            </Grid>
+          </ContextProvider>
+        </Grid>
       </div>
     );
   }
