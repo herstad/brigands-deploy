@@ -15,10 +15,10 @@ class App extends Component {
         <CssBaseline/>
         <Grid container justify="center" direction="row" spacing={24}>
           <ContextProvider>
-            <Grid item xs={4}>
+            <Grid item xs>
               <InfoPane/>
             </Grid>
-            <Grid item xs={4}>
+            <Grid item xs>
               <PlayingField size="10"/>
             </Grid>
             <Grid item xs={4}>

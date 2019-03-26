@@ -1,25 +1,41 @@
 import React, {Component} from 'react';
 import BrigandContext from "./BrigandContext";
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableRow from '@material-ui/core/TableRow';
+import Icon from '@material-ui/core/Icon';
+import IconButton from '@material-ui/core/IconButton';
 
 class PlayingField extends Component {
+
+  typeIcons = {
+    o: 'android',
+    x: 'directions_walk',
+    grass: 'crop_free',
+    tree:'nature',
+
+  };
+
+  getIcon = (type) => this.typeIcons[type] || 'crop_free';
 
   render() {
 
     return <div className="PlayingField">
-      <table>
-        <tbody>
+      <Table padding="none">
+        <TableBody>
         <BrigandContext.Consumer>
           {({items, setSelected}) => {
             return (this.createMatrix(10, items).map(row =>
-              <tr key={row[0].y}>{row.map(elem =>
-                <td key={'x' + elem.x + 'y' + elem.y}>
-                  <button onClick={() => setSelected(elem)}>{elem.type}</button>
-                </td>)}
-              </tr>))
+              <TableRow key={row[0].y}>{row.map(elem =>
+                <TableCell key={'x' + elem.x + 'y' + elem.y}>
+                  <IconButton onClick={() => setSelected(elem)}><Icon>{this.getIcon(elem.type)}</Icon></IconButton>
+                </TableCell>)}
+              </TableRow>))
           }}
         </BrigandContext.Consumer>
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
     </div>;
   }
 
