@@ -4,15 +4,39 @@ import BrigandContext from './BrigandContext';
 export default class ContextProvider extends Component {
   state = {
     turn: 0,
-    ap:1,
-    items: [{id: 0, x: 1, y: 2, hp: 5, type: 'x'}, {id: 1, x: 0, y: 0, hp: 5, type: 'o'}],
+    ap: 1,
+    items: ContextProvider.generateItems(),
     selected: undefined,
   };
 
+  static generateItems(size = 10) {
+    const items = [{id: 0, x: 1, y: 2, hp: 5, type: 'x'}, {id: 1, x: 0, y: 0, hp: 5, type: 'o'}];
+    return ContextProvider.generatePosition(size, items);
+  }
+
+  static generatePosition(size, items) {
+    const xs = ContextProvider.generateRandomArray(size);
+    const ys = ContextProvider.generateRandomArray(size);
+    return items.map((item) => ({...item, x: xs.shift(), y: ys.shift()}));
+  };
+
+  static generateRandomArray(size) {
+    const array = Array.from(Array(size).keys());
+    ContextProvider.shuffleArray(array);
+    return array;
+  };
+
+  static shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+  };
+
   endTurn = () => {
-    this.setState(state => ({turn: state.turn + 1, ap:1}));
+    this.setState(state => ({turn: state.turn + 1, ap: 1}));
     this.aiTurn();
-    this.setState(() => ({ap:1}));
+    this.setState(() => ({ap: 1}));
   };
 
   aiTurn = () => {
@@ -67,7 +91,7 @@ export default class ContextProvider extends Component {
     this.setState((state) => {
       const items = state.items.map(this.updateItem(predicate, updateFn, state));
       console.log("ap " + state.ap);
-      return {items, ap: state.ap - 1 };
+      return {items, ap: state.ap - 1};
     });
   };
 
