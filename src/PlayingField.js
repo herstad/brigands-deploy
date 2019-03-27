@@ -12,8 +12,11 @@ class PlayingField extends Component {
   typeIcons = {
     o: 'android',
     x: 'directions_walk',
+    mounted: 'direction_bike',
     grass: 'crop_free',
     tree:'nature',
+    water: 'waves',
+    rock: 'landscape',
 
   };
 

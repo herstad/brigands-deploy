@@ -10,11 +10,23 @@ export default class ContextProvider extends Component {
   };
 
   static generateItems(size = 10) {
-    const items = [{id: 0, x: 1, y: 2, hp: 5, type: 'x'}, {id: 1, x: 0, y: 0, hp: 5, type: 'o'}];
+    const items = [
+      {id: 0, hp: 5, type: 'x'},
+      {id: 1, hp: 5, type: 'o'},
+      {type: 'tree'},
+      {type: 'tree'},
+      {type: 'tree'},
+      {type: 'tree'},
+      {type: 'tree'},
+      {type: 'tree'},
+      {type: 'rock'},
+      {type: 'water'},
+    ];
     return ContextProvider.generatePosition(size, items);
   }
 
   static generatePosition(size, items) {
+    //TODO only generates size positions, should be size*size
     const xs = ContextProvider.generateRandomArray(size);
     const ys = ContextProvider.generateRandomArray(size);
     return items.map((item) => ({...item, x: xs.shift(), y: ys.shift()}));
