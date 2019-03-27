@@ -1,34 +1,42 @@
 import React, {Component} from 'react';
 import BrigandContext from "./BrigandContext";
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import Button from '@material-ui/core/Button';
 
 class Orders extends Component {
 
   render() {
     return <div>
-      <BrigandContext.Consumer>
-        {({endTurn, turn}) => {
-          return (
-            <button onClick={endTurn}>Turn: {turn}</button>
-          )
-        }}
-      </BrigandContext.Consumer>
-      <BrigandContext.Consumer>
-        {({moveTowardEnemy, ap}) => {
-          return ((ap > 0) ? <button onClick={moveTowardEnemy}>MoveTowardEnemy</button> : undefined)
-        }}
-      </BrigandContext.Consumer>
-      <BrigandContext.Consumer>
-        {({moveAwayFromEnemy, ap}) => {
-          return ((ap > 0) ?
-            <button onClick={moveAwayFromEnemy}>MoveAwayFromEnemy</button> : undefined)
-        }}
-      </BrigandContext.Consumer>
-      <BrigandContext.Consumer>
-        {({attack, inRange, items, ap}) => {
-          return (ap > 0 && inRange(items[0], items[1]) ?
-            <button onClick={attack}>Attack!</button> : undefined)
-        }}
-      </BrigandContext.Consumer>
+      <Card>
+        <CardContent>
+          <BrigandContext.Consumer>
+            {({endTurn, turn}) => {
+              return (
+                <Button onClick={endTurn}>Turn: {turn}</Button>
+              )
+            }}
+          </BrigandContext.Consumer>
+          <BrigandContext.Consumer>
+            {({moveTowardEnemy, ap}) => {
+              return ((ap > 0) ?
+                <Button onClick={moveTowardEnemy}>Move Toward Enemy</Button> : undefined)
+            }}
+          </BrigandContext.Consumer>
+          <BrigandContext.Consumer>
+            {({moveAwayFromEnemy, ap}) => {
+              return ((ap > 0) ?
+                <Button onClick={moveAwayFromEnemy}>Move Away From Enemy</Button> : undefined)
+            }}
+          </BrigandContext.Consumer>
+          <BrigandContext.Consumer>
+            {({attack, inRange, items, ap}) => {
+              return (ap > 0 && inRange(items[0], items[1]) ?
+                <Button onClick={attack}>Attack!</Button> : undefined)
+            }}
+          </BrigandContext.Consumer>
+        </CardContent>
+      </Card>
     </div>
   }
 }
