@@ -20,22 +20,29 @@ export default class ContextProvider extends Component {
       {type: 'tree'},
       {type: 'tree'},
       {type: 'rock'},
+      {type: 'rock'},
+      {type: 'rock'},
+      {type: 'water'},
+      {type: 'water'},
       {type: 'water'},
     ];
     return ContextProvider.generatePosition(size, items);
   }
 
   static generatePosition(size, items) {
-    //TODO only generates size positions, should be size*size
-    const xs = ContextProvider.generateRandomArray(size);
-    const ys = ContextProvider.generateRandomArray(size);
-    return items.map((item) => ({...item, x: xs.shift(), y: ys.shift()}));
+    const points = ContextProvider.generateRandomMatrix(size);
+    return items.map((item) => ({...item, ...points.shift()}));
   };
 
-  static generateRandomArray(size) {
+  static generateRandomMatrix(size) {
     const array = Array.from(Array(size).keys());
-    ContextProvider.shuffleArray(array);
-    return array;
+    const matrix = array.map((x)=> {
+      return array.map((y) => {
+        return {x,y};
+      })
+    }).flat();
+    ContextProvider.shuffleArray(matrix);
+    return matrix;
   };
 
   static shuffleArray(array) {
