@@ -17,6 +17,7 @@ class PlayingField extends Component {
     tree:'nature',
     water: 'waves',
     rock: 'landscape',
+    dead: 'airline_seat_flat',
 
   };
 

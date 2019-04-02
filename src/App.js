@@ -6,6 +6,7 @@ import InfoPane from './InfoPane';
 import ContextProvider from "./ContextProvider";
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Grid from '@material-ui/core/Grid';
+import WinDialog from "./WinDialog";
 
 class App extends Component {
 
@@ -15,6 +16,7 @@ class App extends Component {
         <CssBaseline/>
         <Grid container justify="center" direction="row" spacing={24}>
           <ContextProvider>
+            <WinDialog/>
             <Grid item xs>
               <InfoPane/>
             </Grid>

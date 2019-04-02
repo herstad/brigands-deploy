@@ -1,69 +1,39 @@
 import React, {Component} from 'react';
 import BrigandContext from './BrigandContext';
+import {generateState} from './stateGenerator';
 
 export default class ContextProvider extends Component {
-  state = {
-    turn: 0,
-    ap: 1,
-    items: ContextProvider.generateItems(),
-    selected: undefined,
-  };
 
-  static generateItems(size = 10) {
-    const items = [
-      {id: 0, hp: 5, type: 'x'},
-      {id: 1, hp: 5, type: 'o'},
-      {type: 'tree'},
-      {type: 'tree'},
-      {type: 'tree'},
-      {type: 'tree'},
-      {type: 'tree'},
-      {type: 'tree'},
-      {type: 'rock'},
-      {type: 'rock'},
-      {type: 'rock'},
-      {type: 'water'},
-      {type: 'water'},
-      {type: 'water'},
-    ];
-    return ContextProvider.generatePosition(size, items);
-  }
+  state = generateState();
 
-  static generatePosition(size, items) {
-    const points = ContextProvider.generateRandomMatrix(size);
-    return items.map((item) => ({...item, ...points.shift()}));
-  };
-
-  static generateRandomMatrix(size) {
-    const array = Array.from(Array(size).keys());
-    const matrix = array.map((x)=> {
-      return array.map((y) => {
-        return {x,y};
-      })
-    }).flat();
-    ContextProvider.shuffleArray(matrix);
-    return matrix;
-  };
-
-  static shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
-    }
+  restart = () => {
+    this.setState(generateState());
   };
 
   endTurn = () => {
-    this.setState(state => ({turn: state.turn + 1, ap: 1}));
+    this.setState((state) => {
+      const winner = this.getWinner(state);
+      console.log('Winner: ', winner);
+      return ({turn: state.turn + 1, ap: 1, winner})
+    });
     this.aiTurn();
     this.setState(() => ({ap: 1}));
   };
 
+  getWinner(state) {
+    return this.isLoser('ai', state) ? 'human' : this.isLoser('human', state) ? 'ai' : undefined;
+  }
+
+  isLoser(playerId, state) {
+    return this.getItemsByPlayer(playerId, state).every((item) => item.hp <= 0);
+  };
+
   aiTurn = () => {
-    this.update(((item, state) => item.type === 'x' && this.inRange(this.getItemByType('o', state), item)), (item) => {
+    this.update(((item, state) => !state.winner && this.isPlayer('human', item) && this.inRange(this.getItemsByPlayer('ai', state)[0], item)), (item) => {
       console.log('ai attack');
       return ({hp: item.hp - 1})
     });
-    this.update(((item, state) => item.type === 'o' && !this.inRange(this.getItemByType('x', state), item)), (item, state) => {
+    this.update(((item, state) => !state.winner && this.isPlayer('ai', item) && !this.inRange(this.getItemsByPlayer('human', state)[0], item)), (item, state) => {
       console.log('ai move');
       return this.moveFn(item, this.toward(item, this.getItemByType('x', state)));
     });
@@ -103,7 +73,10 @@ export default class ContextProvider extends Component {
   };
 
   attack = () => {
-    this.update(this.matchId(1), (item) => ({hp: item.hp - 1}));
+    this.update(this.matchId(1), (item) => {
+      const hp = item.hp - 1;
+      return hp > 0 ? {hp} : {hp, type: 'dead'};
+    });
   };
 
   update = (predicate, updateFn) => {
@@ -134,25 +107,37 @@ export default class ContextProvider extends Component {
     return (item) => item.type === type;
   };
 
+  matchPlayer(playerId) {
+    return (item) => this.isPlayer(playerId, item);
+  }
+
+  isPlayer(playerId, item) {
+    return item.playerId === playerId;
+  }
+
   getItemById = (id, state) => state.items.find((item) => item.id === id);
 
   getItemByType = (type, state) => state.items.find((item) => item.type === type);
 
+  getItemsByPlayer = (playerId, state) => state.items.filter(this.matchPlayer(playerId));
+
 
   render() {
-    const {turn, ap, items, selected} = this.state;
+    const {ap, items, selected, turn, winner,} = this.state;
 
     const value = {
-      endTurn: this.endTurn,
-      turn,
       ap,
+      items,
+      selected,
+      turn,
+      winner,
+      endTurn: this.endTurn,
       moveTowardEnemy: this.moveTowardEnemy,
       moveAwayFromEnemy: this.moveAwayFromEnemy,
       attack: this.attack,
       inRange: this.inRange,
-      items,
-      selected,
-      setSelected: this.setSelected
+      setSelected: this.setSelected,
+      restart: this.restart,
     };
 
     return (
