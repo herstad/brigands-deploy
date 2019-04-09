@@ -14,10 +14,11 @@ export default class ContextProvider extends Component {
     this.setState((state) => {
       const winner = this.getWinner(state);
       console.log('Winner: ', winner);
-      return ({turn: state.turn + 1, ap: 1, winner})
+      return ({turn: state.turn + 1, winner, selectedId: 0})
     });
+    this.update(this.matchPlayer('ai'), () => ({ ap: 1}));
     this.aiTurn();
-    this.setState(() => ({ap: 1}));
+    this.update(this.matchPlayer('human'), () => ({ ap: 1}));
   };
 
   getWinner(state) {
@@ -39,9 +40,9 @@ export default class ContextProvider extends Component {
     });
   };
 
-  setSelected = (selected) => {
-    console.log('setSelected x:' + selected.x);
-    this.setState({selected});
+  setSelected = (selectedId) => {
+    console.log('setSelectedId:' + selectedId);
+    this.setState({selectedId});
   };
 
   moveTowardEnemy = () => {
@@ -69,7 +70,8 @@ export default class ContextProvider extends Component {
   };
 
   move = (direction) => {
-    return this.update(this.matchId(0), (item, state) => this.moveFn(item, direction(state)));
+    this.update(this.matchId(0), (item, state) => this.moveFn(item, direction(state)));
+    this.update(this.matchId(0), (item) => ({ap: item.ap - 1}))
   };
 
   attack = () => {
@@ -77,13 +79,13 @@ export default class ContextProvider extends Component {
       const hp = item.hp - 1;
       return hp > 0 ? {hp} : {hp, type: 'dead'};
     });
+    this.update(this.matchId(0), (item) => ({ap: item.ap-1}));
   };
 
   update = (predicate, updateFn) => {
     this.setState((state) => {
       const items = state.items.map(this.updateItem(predicate, updateFn, state));
-      console.log("ap " + state.ap);
-      return {items, ap: state.ap - 1};
+      return {items};
     });
   };
 
@@ -123,12 +125,12 @@ export default class ContextProvider extends Component {
 
 
   render() {
-    const {ap, items, selected, turn, winner,} = this.state;
+    const {ap, items, selectedId, turn, winner,} = this.state;
 
     const value = {
       ap,
       items,
-      selected,
+      selectedId,
       turn,
       winner,
       endTurn: this.endTurn,

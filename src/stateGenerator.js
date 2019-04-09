@@ -2,9 +2,8 @@ export const generateState = () => {
   console.log("generate state");
   return {
     turn: 0,
-    ap: 1,
     items: generateItems(),
-    selected: undefined,
+    selectedId: 0,
     winner: undefined,
   };
 };

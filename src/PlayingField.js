@@ -33,7 +33,7 @@ class PlayingField extends Component {
             return (this.createMatrix(10, items).map(row =>
               <TableRow key={row[0].y}>{row.map(elem =>
                 <TableCell key={'x' + elem.x + 'y' + elem.y}>
-                  <IconButton onClick={() => setSelected(elem)}><Icon>{this.getIcon(elem.type)}</Icon></IconButton>
+                  <IconButton onClick={() => setSelected(elem.id)}><Icon>{this.getIcon(elem.type)}</Icon></IconButton>
                 </TableCell>)}
               </TableRow>))
           }}

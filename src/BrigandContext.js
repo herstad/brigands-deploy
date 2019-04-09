@@ -3,9 +3,8 @@ import React from 'react';
 const BrigandContext = React.createContext({
 
   turn: 0,
-  ap: 1,
   items: [],
-  selected: undefined,
+  selectedId: undefined,
   endTurn() {
   },
   setSelected(selected) {
