@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import BrigandContext from './BrigandContext';
 import {generateState} from './stateGenerator';
+import {getItemsByPlayer, isPlayer, matchPlayer} from './itemsUtil';
 
 export default class ContextProvider extends Component {
 
@@ -16,25 +17,25 @@ export default class ContextProvider extends Component {
       console.log('Winner: ', winner);
       return ({turn: state.turn + 1, winner, selectedId: 0})
     });
-    this.update(this.matchPlayer('ai'), () => ({ ap: 1}));
+    this.update(matchPlayer('ai'), () => ({ap: 1}));
     this.aiTurn();
-    this.update(this.matchPlayer('human'), () => ({ ap: 1}));
+    this.update(matchPlayer('human'), () => ({ap: 1}));
   };
 
   getWinner(state) {
-    return this.isLoser('ai', state) ? 'human' : this.isLoser('human', state) ? 'ai' : undefined;
+    return this.isLoser('ai', state.items) ? 'human' : this.isLoser('human', state.items) ? 'ai' : undefined;
   }
 
-  isLoser(playerId, state) {
-    return this.getItemsByPlayer(playerId, state).every((item) => item.hp <= 0);
+  isLoser(playerId, items) {
+    return getItemsByPlayer(playerId, items).every((item) => item.hp <= 0);
   };
 
   aiTurn = () => {
-    this.update(((item, state) => !state.winner && this.isPlayer('human', item) && this.inRange(this.getItemsByPlayer('ai', state)[0], item)), (item) => {
+    this.update(((item, state) => !state.winner && isPlayer('human', item) && this.inRange(getItemsByPlayer('ai', state.items)[0], item)), (item) => {
       console.log('ai attack');
       return ({hp: item.hp - 1})
     });
-    this.update(((item, state) => !state.winner && this.isPlayer('ai', item) && !this.inRange(this.getItemsByPlayer('human', state)[0], item)), (item, state) => {
+    this.update(((item, state) => !state.winner && isPlayer('ai', item) && !this.inRange(getItemsByPlayer('human', state.items)[0], item)), (item, state) => {
       console.log('ai move');
       return this.moveFn(item, this.toward(item, this.getItemByType('x', state)));
     });
@@ -79,7 +80,7 @@ export default class ContextProvider extends Component {
       const hp = item.hp - 1;
       return hp > 0 ? {hp} : {hp, type: 'dead'};
     });
-    this.update(this.matchId(0), (item) => ({ap: item.ap-1}));
+    this.update(this.matchId(0), (item) => ({ap: item.ap - 1}));
   };
 
   update = (predicate, updateFn) => {
@@ -109,19 +110,7 @@ export default class ContextProvider extends Component {
     return (item) => item.type === type;
   };
 
-  matchPlayer(playerId) {
-    return (item) => this.isPlayer(playerId, item);
-  }
-
-  isPlayer(playerId, item) {
-    return item.playerId === playerId;
-  }
-
-  getItemById = (id, state) => state.items.find((item) => item.id === id);
-
   getItemByType = (type, state) => state.items.find((item) => item.type === type);
-
-  getItemsByPlayer = (playerId, state) => state.items.filter(this.matchPlayer(playerId));
 
 
   render() {
