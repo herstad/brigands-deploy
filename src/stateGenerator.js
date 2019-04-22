@@ -5,6 +5,7 @@ export const generateState = () => {
     items: generateItems(),
     selectedId: 0,
     winner: undefined,
+    events: [{type: 'ENEMY_SPOTTED', itemId: 1}, {type:'GAME_STARTED'}],
   };
 };
 
@@ -28,7 +29,7 @@ const generateItems = (size = 10) => {
   return generatePosition(size, items);
 };
 
-const generatePosition= (size, items) => {
+const generatePosition = (size, items) => {
   const points = generateRandomMatrix(size);
   return items.map((item) => ({...item, ...points.shift()}));
 };

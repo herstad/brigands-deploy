@@ -35,8 +35,27 @@ class InfoPane extends Component {
           )
         }}
       </BrigandContext.Consumer>
+      <BrigandContext.Consumer>
+        {({events, items}) => {
+          const eventCards = events.map((event, index) => {
+            const {x, y, type} = (event.itemId ? getItemById(event.itemId, items) : {});
+            return (
+              <Card key={"event" + index}>
+                <CardContent>
+                  <Typography>type:{event.type}</Typography>
+                  <Typography>x:{x}</Typography>
+                  <Typography>y:{y}</Typography>
+                  <Typography>itemType:{type}</Typography>
+                </CardContent>
+              </Card>
+            )
+          });
+          return (<div>{eventCards}</div>);
+        }}
+      </BrigandContext.Consumer>
     </div>
   }
+
 
 }
 

@@ -15,7 +15,7 @@ export default class ContextProvider extends Component {
     this.setState((state) => {
       const winner = this.getWinner(state);
       console.log('Winner: ', winner);
-      return ({turn: state.turn + 1, winner, selectedId: 0})
+      return ({turn: state.turn + 1, winner, events: [], selectedId: 0})
     });
     this.update(matchPlayer('ai'), () => ({ap: 1}));
     this.aiTurn();
@@ -114,7 +114,7 @@ export default class ContextProvider extends Component {
 
 
   render() {
-    const {ap, items, selectedId, turn, winner,} = this.state;
+    const {ap, items, selectedId, turn, winner, events,} = this.state;
 
     const value = {
       ap,
@@ -122,6 +122,7 @@ export default class ContextProvider extends Component {
       selectedId,
       turn,
       winner,
+      events,
       endTurn: this.endTurn,
       moveTowardEnemy: this.moveTowardEnemy,
       moveAwayFromEnemy: this.moveAwayFromEnemy,
