@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React from 'react';
 import './App.css';
 import PlayingField from './PlayingField';
 import Orders from './Orders';
@@ -8,29 +8,26 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import Grid from '@material-ui/core/Grid';
 import WinDialog from "./WinDialog";
 
-class App extends Component {
+export default function App() {
 
-  render() {
-    return (
-      <div className="App">
-        <CssBaseline/>
-        <Grid container justify="center" direction="row" spacing={24}>
-          <ContextProvider>
-            <WinDialog/>
-            <Grid item xs>
-              <InfoPane/>
-            </Grid>
-            <Grid item xs>
-              <PlayingField size="10"/>
-            </Grid>
-            <Grid item xs={4}>
-              <Orders/>
-            </Grid>
-          </ContextProvider>
-        </Grid>
-      </div>
-    );
-  }
+  return (
+    <div className="App">
+      <CssBaseline/>
+      <Grid container justify="center" direction="row" spacing={24}>
+        <ContextProvider>
+          <WinDialog/>
+          <Grid item xs>
+            <InfoPane/>
+          </Grid>
+          <Grid item xs>
+            <PlayingField size="10"/>
+          </Grid>
+          <Grid item xs={4}>
+            <Orders/>
+          </Grid>
+        </ContextProvider>
+      </Grid>
+    </div>
+  );
 }
 
-export default App;
