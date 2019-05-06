@@ -40,7 +40,7 @@ const createAtPosition = (items = [], x, y) => {
 function PlayingFieldCell({elem}) {
   const {setSelected} = useContext(BrigandContext);
   return (
-    <TableCell key={'x' + elem.x + 'y' + elem.y}>
+    <TableCell>
       <IconButton
         onClick={() => setSelected(elem.id)}><Icon>{getIcon(elem.type)}</Icon></IconButton>
     </TableCell>);
@@ -55,7 +55,7 @@ export default function PlayingField() {
         {
           (matrix.map(row =>
             <TableRow key={row[0].y}>{
-              row.map(elem => <PlayingFieldCell elem={elem}/>)}
+              row.map(elem => <PlayingFieldCell key={'x' + elem.x + 'y' + elem.y} elem={elem}/>)}
             </TableRow>))
         }
       </TableBody>
