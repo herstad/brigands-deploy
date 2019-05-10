@@ -1,11 +1,11 @@
 import React, {useContext} from 'react';
-import BrigandContext from "./BrigandContext";
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
+import {ReducerDispatch} from "./App";
 
 
 const typeIcons = {
@@ -20,7 +20,7 @@ const typeIcons = {
 
 };
 
-const getIcon = (type) => typeIcons[type] || 'crop_free';
+const getIcon = (elem) => elem.hp <1 ? typeIcons['dead'] : typeIcons[elem.type] || 'crop_free';
 
 const createMatrix = (n = 10, items) => {
   let matrix = [];
@@ -37,17 +37,22 @@ const createAtPosition = (items = [], x, y) => {
   return items.find((item) => item.x === x && item.y === y) || {x: x, y: y, type: '.'}
 };
 
+
 function PlayingFieldCell({elem}) {
-  const {setSelected} = useContext(BrigandContext);
+  const {dispatch} = useContext(ReducerDispatch);
+  const handleSetSelected = (id) => () => {
+    console.log('set selected' + id);
+    dispatch({type: 'SET_SELECTED', payload: id});
+  };
   return (
     <TableCell>
       <IconButton
-        onClick={() => setSelected(elem.id)}><Icon>{getIcon(elem.type)}</Icon></IconButton>
+        onClick={handleSetSelected(elem.id)}><Icon>{getIcon(elem)}</Icon></IconButton>
     </TableCell>);
 }
 
 export default function PlayingField() {
-  const {items} = useContext(BrigandContext);
+  const {items} = useContext(ReducerDispatch).state;
   const matrix = createMatrix(10, items);
   return <div className="PlayingField">
     <Table padding="none">

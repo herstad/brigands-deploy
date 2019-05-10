@@ -5,7 +5,7 @@ import {getItemsByPlayer, isPlayer, matchPlayer} from './itemsUtil';
 
 export default class ContextProvider extends Component {
 
-  state = generateState();
+  state = this.props.tempState; //generateState();
 
   restart = () => {
     this.setState(generateState());

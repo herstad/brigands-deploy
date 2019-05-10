@@ -1,20 +1,27 @@
-import React from 'react';
+import React, {useReducer} from 'react';
 import './App.css';
 import PlayingField from './PlayingField';
 import Orders from './Orders';
 import InfoPane from './InfoPane';
-import ContextProvider from "./ContextProvider";
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Grid from '@material-ui/core/Grid';
 import WinDialog from "./WinDialog";
+import reducer from "./reducer";
+import {generateState} from "./stateGenerator";
+
+export const ReducerDispatch = React.createContext(null);
+
+const initialState = generateState();
 
 export default function App() {
+
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   return (
     <div className="App">
       <CssBaseline/>
       <Grid container justify="center" direction="row" spacing={24}>
-        <ContextProvider>
+        <ReducerDispatch.Provider value={{state, dispatch}}>
           <WinDialog/>
           <Grid item xs>
             <InfoPane/>
@@ -25,7 +32,7 @@ export default function App() {
           <Grid item xs={4}>
             <Orders/>
           </Grid>
-        </ContextProvider>
+        </ReducerDispatch.Provider>
       </Grid>
     </div>
   );

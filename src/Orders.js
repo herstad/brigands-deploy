@@ -1,9 +1,9 @@
 import React, {useContext} from 'react';
-import BrigandContext from "./BrigandContext";
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import {getItemById, getItemsByPlayer} from "./itemsUtil";
+import {ReducerDispatch} from "./App";
 
 const selectedHasAp = (selectedId, items) => {
   const ap = getItemById(selectedId, items).ap;
@@ -11,37 +11,35 @@ const selectedHasAp = (selectedId, items) => {
 };
 
 function TurnButton() {
-  const {endTurn, turn} = useContext(BrigandContext);
+  const {state, dispatch} = useContext(ReducerDispatch);
+  const handleEndTurn = (playerId) => () => {
+    return dispatch({
+      type: 'END_TURN',
+      payload: playerId
+
+    })
+  };
   return (
-    <Button onClick={endTurn}>Turn: {turn}</Button>
+    <Button onClick={handleEndTurn('human')}>Turn: {state.turn}</Button>
   );
 }
 
-function MoveTowardEnemyButton() {
-  const {moveTowardEnemy, selectedId, items} = useContext(BrigandContext);
-  if (!selectedHasAp(selectedId, items)) {
-    return null;
-  }
-  return (<Button onClick={moveTowardEnemy}>Move Toward Enemy</Button>);
-}
-
-function MoveAwayFromEnemyButton() {
-  const {moveAwayFromEnemy, selectedId, items} = useContext(BrigandContext);
-  if (!selectedHasAp(selectedId, items)) {
-    return null;
-  }
-  return (<Button onClick={moveAwayFromEnemy}>Move Away From Enemy</Button>);
-}
-
 function AttackButton() {
-  const {attack, inRange, selectedId, items} = useContext(BrigandContext);
-  const selected = getItemById(selectedId, items);
-  //TODO create a button for each attack option
-  const target = getItemsByPlayer('ai', items).find((enemy) => inRange(selected, enemy));
-  if (!selectedHasAp(selectedId, items) || !target) {
+  const {state, dispatch} = useContext(ReducerDispatch);
+  if (!selectedHasAp(state.selectedId, state.items)) {
     return null;
   }
-  return (<Button onClick={attack}>Attack!</Button>);
+  const handleAttack = (targetId) => () => {
+    return dispatch({
+      type: 'ATTACK',
+      payload: {
+        attackerId: state.selectedId,
+        targetId
+      }
+    })
+  };
+  return (<Button onClick={handleAttack(getItemsByPlayer('ai', state.items)[0].id)}>Attack
+    Enemy</Button>);
 }
 
 export default function Orders() {
@@ -49,8 +47,6 @@ export default function Orders() {
     <Card>
       <CardContent>
         <TurnButton/>
-        <MoveTowardEnemyButton/>
-        <MoveAwayFromEnemyButton/>
         <AttackButton/>
       </CardContent>
     </Card>
