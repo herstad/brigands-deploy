@@ -13,10 +13,12 @@ const selectedHasAp = (selectedId, items) => {
 function TurnButton() {
   const {state, dispatch} = useContext(ReducerDispatch);
   const handleEndTurn = (playerId) => () => {
-    return dispatch({
+    getItemsByPlayer(playerId, state.items)
+      .filter((item) => item.action && item.ap)
+      .forEach((item) => dispatch(item.action));
+    dispatch({
       type: 'END_TURN',
       payload: playerId
-
     })
   };
   return (
@@ -30,7 +32,7 @@ function AttackButton() {
     return null;
   }
   const handleAttack = (targetId) => () => {
-    return dispatch({
+    dispatch({
       type: 'ATTACK',
       payload: {
         attackerId: state.selectedId,

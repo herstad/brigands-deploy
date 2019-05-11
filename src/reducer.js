@@ -11,7 +11,7 @@ import {moveFn, toward} from "./movement";
 
 const printIs = (state) => state.items.map(item => console.log('item' + item.x, item.y, item.ap));
 
-const getWinner= (state) => {
+const getWinner = (state) => {
   return isLoser('ai', state.items) ? 'human' : isLoser('human', state.items) ? 'ai' : undefined;
 };
 
@@ -28,7 +28,7 @@ export default (state, action) => {
       return updateItems((item) => isPlayer(action.payload, item), (item) => ({
         ...item,
         ap: 1
-      }), {...state, turn: state.turn+1, winner: getWinner(state)});
+      }), {...state, turn: state.turn + 1, winner: getWinner(state)});
     case 'RESTART':
       console.log('selectedId: ' + state.selectedId);
       console.log('restarting: action: ' + action.type);
@@ -38,21 +38,20 @@ export default (state, action) => {
       return {...state, selectedId: action.payload};
     case 'ATTACK':
       const {attackerId, targetId} = action.payload;
-      const attacker = getItemById(attackerId, state.items);
+      const attacker = {...getItemById(attackerId, state.items), ap: 0, action};
       const target = getItemById(targetId, state.items);
+
+      const apConsumedState = updateItemById(attacker, state);
       console.log('Attacker: ' + attackerId + ' Target: ' + targetId);
 
       if (inRange(attacker, target)) {
         console.log('target in range!');
-        const apConsumedState = updateItemById({...attacker, ap:0}, state);
-        return updateItemById({...target, hp:target.hp-1}, apConsumedState);
+        return updateItemById({...target, hp: target.hp - 1}, apConsumedState);
       } else {
         console.log('target not in range!');
         const direction = toward(attacker, target);
         console.log('move in direction xy:' + direction.x + direction.y);
-        const newState = updateItemById(moveFn(attacker, direction), state);
-        const newAttacker = getItemById(attacker.id, newState.items);
-        return updateItemById({...newAttacker, ap: 0}, newState);
+        return updateItemById(moveFn(attacker, direction), apConsumedState);
       }
     default:
       return state;
