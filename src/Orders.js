@@ -10,6 +10,11 @@ const selectedHasAp = (selectedId, items) => {
   return ap > 0;
 };
 
+const isSelectedAction = (type, selectedId, items) => {
+  const itemAction = getItemById(selectedId, items).action;
+  return itemAction && type === itemAction.type;
+};
+
 function TurnButton() {
   const {state, dispatch} = useContext(ReducerDispatch);
   const handleEndTurn = (playerId) => () => {
@@ -31,6 +36,7 @@ function AttackButton() {
   if (!selectedHasAp(state.selectedId, state.items)) {
     return null;
   }
+  const color = isSelectedAction('ATTACK', state.selectedId, state.items) ? 'primary' : '';
   const handleAttack = (targetId) => () => {
     dispatch({
       type: 'ATTACK',
@@ -40,7 +46,7 @@ function AttackButton() {
       }
     })
   };
-  return (<Button onClick={handleAttack(getItemsByPlayer('ai', state.items)[0].id)}>Attack
+  return (<Button color={color} onClick={handleAttack(getItemsByPlayer('ai', state.items)[0].id)}>Attack
     Enemy</Button>);
 }
 
