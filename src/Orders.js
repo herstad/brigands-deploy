@@ -2,7 +2,7 @@ import React, {useContext} from 'react';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
-import {getItemById, getItemsByPlayer, getSelectedItem} from "./itemsUtil";
+import {getEnemyItems, getItemById, getItemsByPlayer, getSelectedItem} from "./itemsUtil";
 import {ReducerDispatch} from "./App";
 import {PLAYERS} from "./stateGenerator";
 
@@ -47,17 +47,35 @@ function AttackButton({targetId}) {
   return (<Button color={color} onClick={handleAttack}>Attack Enemy</Button>);
 }
 
+function DefendButton({areaId}) {
+  const {state, dispatch} = useContext(ReducerDispatch);
+  const selectedItem = getSelectedItem(state);
+  if (selectedItem.ap < 1 || selectedItem.playerId !== state.activePlayerId) {
+    return null;
+  }
+  const color = isSelectedAction('DEFEND', state.selectedId, state.items) ? 'primary' : 'default';
+  const handleAttack = () => {
+    dispatch({
+      type: 'DEFEND',
+      payload: {
+        defenderId: state.selectedId,
+        areaId: areaId,
+      }
+    })
+  };
+  return (<Button color={color} onClick={handleAttack}>Defend Area {areaId}</Button>);
+}
+
 export default function Orders() {
   const {state} = useContext(ReducerDispatch);
-  const otherPlayers = PLAYERS.filter((player) => state.activePlayerId !== player);
-  const enemyItems = otherPlayers.flatMap((otherPlayer) => getItemsByPlayer(otherPlayer, state.items));
   return <div>
     <Card>
       <CardContent>
         <TurnButton/>
         {
-          enemyItems.map((enemy) => <AttackButton key={enemy.id} targetId={enemy.id}/>)
+          getEnemyItems(state).map((enemy) => <AttackButton key={enemy.id} targetId={enemy.id}/>)
         }
+        <DefendButton areaId={5}/>
       </CardContent>
     </Card>
   </div>

@@ -1,5 +1,6 @@
 import {generateState, PLAYERS} from "./stateGenerator";
 import {
+  getEnemyItems,
   getItemById,
   getItemsByPlayer,
   inRange,
@@ -29,7 +30,7 @@ const isLoser = (playerId, items) => {
 export default (state, action) => {
   console.log('Action type: ' + action.type);
   switch (action.type) {
-    case 'END_TURN':
+    case 'END_TURN': {
       console.log(`Player ${action.payload} ended the turn`);
 
       return updateItems((item) => isPlayer(action.payload, item), (item) => ({
@@ -41,14 +42,17 @@ export default (state, action) => {
         activePlayerId: nextPlayer(state.activePlayerId),
         winner: getWinner(state)
       });
-    case 'RESTART':
+    }
+    case 'RESTART': {
       console.log('selectedId: ' + state.selectedId);
       console.log('restarting: action: ' + action.type);
       return generateState();
-    case 'SET_SELECTED':
+    }
+    case 'SET_SELECTED': {
       console.log('reducer set selected' + action.payload);
       return {...state, selectedId: action.payload};
-    case 'ATTACK':
+    }
+    case 'ATTACK': {
       const {attackerId, targetId} = action.payload;
       const attacker = {...getItemById(attackerId, state.items), ap: 0, action};
       const target = getItemById(targetId, state.items);
@@ -65,6 +69,25 @@ export default (state, action) => {
         console.log('move in direction xy:' + direction.x + direction.y);
         return updateItemById(moveFn(attacker, direction), apConsumedState);
       }
+    }
+    case 'DEFEND': {
+      const {defenderId, areaId} = action.payload;
+      const defender = {...getItemById(defenderId, state.items), ap: 0, action};
+      const area = getItemById(areaId, state.items);
+
+      const apConsumedState = updateItemById(defender, state);
+      console.log('Defend: ' + defenderId + ' Area: ' + areaId);
+      const target = getEnemyItems(state).find((enemy) => inRange(defender, enemy));
+      if (!!target) {
+        console.log('target in range!');
+        return updateItemById({...target, hp: target.hp - 1}, apConsumedState);
+      } else {
+        console.log('target not in range!');
+        const direction = toward(defender, area);
+        console.log('move in direction xy:' + direction.x + direction.y);
+        return updateItemById(moveFn(defender, direction), apConsumedState);
+      }
+    }
     default:
       return state;
   }
