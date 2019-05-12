@@ -29,11 +29,13 @@ const isLoser = (playerId, items) => {
 
 export default (state, action) => {
   console.log('Action type: ' + action.type);
+  const {items} = state;
+  const {payload} = action;
   switch (action.type) {
     case 'END_TURN': {
-      console.log(`Player ${action.payload} ended the turn`);
+      console.log(`Player ${payload} ended the turn`);
 
-      return updateItems((item) => isPlayer(action.payload, item), (item) => ({
+      return updateItems((item) => isPlayer(payload, item), (item) => ({
         ...item,
         ap: 1
       }), {
@@ -44,18 +46,16 @@ export default (state, action) => {
       });
     }
     case 'RESTART': {
-      console.log('selectedId: ' + state.selectedId);
-      console.log('restarting: action: ' + action.type);
       return generateState();
     }
     case 'SET_SELECTED': {
-      console.log('reducer set selected' + action.payload);
-      return {...state, selectedId: action.payload};
+      console.log('reducer set selected' + payload);
+      return {...state, selectedId: payload};
     }
     case 'ATTACK': {
-      const {attackerId, targetId} = action.payload;
-      const attacker = {...getItemById(attackerId, state.items), ap: 0, action};
-      const target = getItemById(targetId, state.items);
+      const {attackerId, targetId} = payload;
+      const attacker = {...getItemById(attackerId, items), ap: 0, action};
+      const target = getItemById(targetId, items);
 
       const apConsumedState = updateItemById(attacker, state);
       console.log('Attacker: ' + attackerId + ' Target: ' + targetId);
@@ -71,9 +71,9 @@ export default (state, action) => {
       }
     }
     case 'DEFEND': {
-      const {defenderId, areaId} = action.payload;
-      const defender = {...getItemById(defenderId, state.items), ap: 0, action};
-      const area = getItemById(areaId, state.items);
+      const {defenderId, areaId} = payload;
+      const defender = {...getItemById(defenderId, items), ap: 0, action};
+      const area = getItemById(areaId, items);
 
       const apConsumedState = updateItemById(defender, state);
       console.log('Defend: ' + defenderId + ' Area: ' + areaId);
@@ -87,6 +87,18 @@ export default (state, action) => {
         console.log('move in direction xy:' + direction.x + direction.y);
         return updateItemById(moveFn(defender, direction), apConsumedState);
       }
+    }
+    case 'BUILD_FARM': {
+      const {builderId} = payload;
+      const builder = getItemById(builderId, items);
+      const farm = {
+        id: items.length,
+        builderId,
+        x: builder.x,
+        y: builder.y,
+        type: 'farm',
+      };
+      return {...state, items: [...items, farm]}
     }
     default:
       return state;

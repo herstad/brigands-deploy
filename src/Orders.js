@@ -67,6 +67,23 @@ function DefendButton({areaId}) {
   return (<Button color={color} onClick={handleDefend}>Defend Area {areaId}</Button>);
 }
 
+function BuildFarmButton() {
+  const {state, dispatch} = useContext(ReducerDispatch);
+  const selectedItem = getSelectedItem(state);
+  if (selectedItem.ap < 1 || selectedItem.playerId !== state.activePlayerId) {
+    return null;
+  }
+  const handleBuildFarm = () => {
+    dispatch({
+      type: 'BUILD_FARM',
+      payload: {
+        builderId: state.selectedId,
+      }
+    })
+  };
+  return (<Button color='default' onClick={handleBuildFarm}>Build farm</Button>);
+}
+
 export default function Orders() {
   const {state} = useContext(ReducerDispatch);
   return <div>
@@ -77,6 +94,7 @@ export default function Orders() {
           getEnemyItems(state).map((enemy) => <AttackButton key={enemy.id} targetId={enemy.id}/>)
         }
         <DefendButton areaId={5}/>
+        <BuildFarmButton/>
       </CardContent>
     </Card>
   </div>

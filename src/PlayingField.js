@@ -17,10 +17,11 @@ const typeIcons = {
   water: 'waves',
   rock: 'landscape',
   dead: 'airline_seat_flat',
+  farm: 'home',
 
 };
 
-const getIcon = (elem) => elem.hp <1 ? typeIcons['dead'] : typeIcons[elem.type] || 'crop_free';
+const getIcon = (elem) => elem.hp < 1 ? typeIcons['dead'] : typeIcons[elem.type] || 'crop_free';
 
 const createMatrix = (n = 10, items) => {
   let matrix = [];
