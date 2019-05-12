@@ -17,8 +17,9 @@ const isSelectedAction = (type, selectedId, items) => {
 
 function TurnButton() {
   const {state, dispatch} = useContext(ReducerDispatch);
+  const {items, activePlayerId} = state;
   const handleEndTurn = (playerId) => () => {
-    getItemsByPlayer(playerId, state.items)
+    getItemsByPlayer(playerId, items)
       .filter((item) => item.action && item.ap)
       .forEach((item) => dispatch(item.action));
     dispatch({
@@ -27,7 +28,7 @@ function TurnButton() {
     })
   };
   return (
-    <Button onClick={handleEndTurn('human')}>Turn: {state.turn}</Button>
+    <Button onClick={handleEndTurn(activePlayerId)}>Turn({activePlayerId}): {state.turn}</Button>
   );
 }
 
@@ -36,7 +37,7 @@ function AttackButton() {
   if (!selectedHasAp(state.selectedId, state.items)) {
     return null;
   }
-  const color = isSelectedAction('ATTACK', state.selectedId, state.items) ? 'primary' : '';
+  const color = isSelectedAction('ATTACK', state.selectedId, state.items) ? 'primary' : 'default';
   const handleAttack = (targetId) => () => {
     dispatch({
       type: 'ATTACK',
