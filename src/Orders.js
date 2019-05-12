@@ -2,13 +2,9 @@ import React, {useContext} from 'react';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
-import {getItemById, getItemsByPlayer} from "./itemsUtil";
+import {getItemById, getItemsByPlayer, getSelectedItem} from "./itemsUtil";
 import {ReducerDispatch} from "./App";
-
-const selectedHasAp = (selectedId, items) => {
-  const ap = getItemById(selectedId, items).ap;
-  return ap > 0;
-};
+import {PLAYERS} from "./stateGenerator";
 
 const isSelectedAction = (type, selectedId, items) => {
   const itemAction = getItemById(selectedId, items).action;
@@ -32,13 +28,14 @@ function TurnButton() {
   );
 }
 
-function AttackButton() {
+function AttackButton({targetId}) {
   const {state, dispatch} = useContext(ReducerDispatch);
-  if (!selectedHasAp(state.selectedId, state.items)) {
+  const selectedItem = getSelectedItem(state);
+  if (selectedItem.ap < 1 || selectedItem.playerId !== state.activePlayerId) {
     return null;
   }
   const color = isSelectedAction('ATTACK', state.selectedId, state.items) ? 'primary' : 'default';
-  const handleAttack = (targetId) => () => {
+  const handleAttack = () => {
     dispatch({
       type: 'ATTACK',
       payload: {
@@ -47,16 +44,20 @@ function AttackButton() {
       }
     })
   };
-  return (<Button color={color} onClick={handleAttack(getItemsByPlayer('ai', state.items)[0].id)}>Attack
-    Enemy</Button>);
+  return (<Button color={color} onClick={handleAttack}>Attack Enemy</Button>);
 }
 
 export default function Orders() {
+  const {state} = useContext(ReducerDispatch);
+  const otherPlayers = PLAYERS.filter((player) => state.activePlayerId !== player);
+  const enemyItems = otherPlayers.flatMap((otherPlayer) => getItemsByPlayer(otherPlayer, state.items));
   return <div>
     <Card>
       <CardContent>
         <TurnButton/>
-        <AttackButton/>
+        {
+          enemyItems.map((enemy) => <AttackButton key={enemy.id} targetId={enemy.id}/>)
+        }
       </CardContent>
     </Card>
   </div>

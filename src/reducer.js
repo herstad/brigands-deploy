@@ -1,4 +1,4 @@
-import {generateState} from "./stateGenerator";
+import {generateState, PLAYERS} from "./stateGenerator";
 import {
   getItemById,
   getItemsByPlayer,
@@ -8,6 +8,13 @@ import {
   updateItems
 } from "./itemsUtil";
 import {moveFn, toward} from "./movement";
+
+const nextPlayer = (activePlayerId) => {
+  const index = PLAYERS.findIndex((id) => id === activePlayerId);
+  return PLAYERS[(index + 1) % PLAYERS.length];
+};
+
+const nextTurn = (turn, activePlayerId) => PLAYERS.slice(-1)[0] === activePlayerId ? turn + 1 : turn;
 
 const printIs = (state) => state.items.map(item => console.log('item' + item.x, item.y, item.ap));
 
@@ -28,7 +35,12 @@ export default (state, action) => {
       return updateItems((item) => isPlayer(action.payload, item), (item) => ({
         ...item,
         ap: 1
-      }), {...state, turn: state.turn + 1, winner: getWinner(state)});
+      }), {
+        ...state,
+        turn: nextTurn(state.turn, state.activePlayerId),
+        activePlayerId: nextPlayer(state.activePlayerId),
+        winner: getWinner(state)
+      });
     case 'RESTART':
       console.log('selectedId: ' + state.selectedId);
       console.log('restarting: action: ' + action.type);
