@@ -4,12 +4,13 @@ import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import {getEnemyItems, getItemById, getItemsByPlayer, getSelectedItem} from "./itemsUtil";
 import {ReducerDispatch} from "./App";
-import {PLAYERS} from "./stateGenerator";
 
-const isSelectedAction = (type, selectedId, items) => {
-  const itemAction = getItemById(selectedId, items).action;
+const isSelectedAction = (type, state) => {
+  const itemAction = getItemById(state.selectedId, state.items).action;
   return itemAction && type === itemAction.type;
 };
+
+const getButtonColor = (type, state) => isSelectedAction(type, state) ? 'primary' : 'default';
 
 function TurnButton() {
   const {state, dispatch} = useContext(ReducerDispatch);
@@ -34,7 +35,7 @@ function AttackButton({targetId}) {
   if (selectedItem.ap < 1 || selectedItem.playerId !== state.activePlayerId) {
     return null;
   }
-  const color = isSelectedAction('ATTACK', state.selectedId, state.items) ? 'primary' : 'default';
+  const color = getButtonColor('ATTACK', state);
   const handleAttack = () => {
     dispatch({
       type: 'ATTACK',
@@ -53,8 +54,8 @@ function DefendButton({areaId}) {
   if (selectedItem.ap < 1 || selectedItem.playerId !== state.activePlayerId) {
     return null;
   }
-  const color = isSelectedAction('DEFEND', state.selectedId, state.items) ? 'primary' : 'default';
-  const handleAttack = () => {
+  const color = getButtonColor('DEFEND', state);
+  const handleDefend = () => {
     dispatch({
       type: 'DEFEND',
       payload: {
@@ -63,7 +64,7 @@ function DefendButton({areaId}) {
       }
     })
   };
-  return (<Button color={color} onClick={handleAttack}>Defend Area {areaId}</Button>);
+  return (<Button color={color} onClick={handleDefend}>Defend Area {areaId}</Button>);
 }
 
 export default function Orders() {
