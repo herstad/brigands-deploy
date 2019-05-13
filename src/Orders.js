@@ -2,12 +2,23 @@ import React, {useContext} from 'react';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
-import {getEnemyItems, getItemById, getItemsByPlayer, getSelectedItem} from "./itemsUtil";
+import {
+  getEnemyItems,
+  getItemById,
+  getItemsByPlayer,
+  getItemsByXY,
+  getSelectedItem
+} from "./itemsUtil";
 import {ReducerDispatch} from "./App";
 
 const isSelectedAction = (type, state) => {
   const itemAction = getItemById(state.selectedId, state.items).action;
   return itemAction && type === itemAction.type;
+};
+
+const selectedItemHasAp = (state) => {
+  const selectedItem = getSelectedItem(state);
+  return selectedItem.ap < 1 || selectedItem.playerId !== state.activePlayerId;
 };
 
 const getButtonColor = (type, state) => isSelectedAction(type, state) ? 'primary' : 'default';
@@ -31,8 +42,7 @@ function TurnButton() {
 
 function AttackButton({targetId}) {
   const {state, dispatch} = useContext(ReducerDispatch);
-  const selectedItem = getSelectedItem(state);
-  if (selectedItem.ap < 1 || selectedItem.playerId !== state.activePlayerId) {
+  if (selectedItemHasAp(state)) {
     return null;
   }
   const color = getButtonColor('ATTACK', state);
@@ -50,8 +60,7 @@ function AttackButton({targetId}) {
 
 function DefendButton({areaId}) {
   const {state, dispatch} = useContext(ReducerDispatch);
-  const selectedItem = getSelectedItem(state);
-  if (selectedItem.ap < 1 || selectedItem.playerId !== state.activePlayerId) {
+  if (selectedItemHasAp(state)) {
     return null;
   }
   const color = getButtonColor('DEFEND', state);
@@ -69,8 +78,8 @@ function DefendButton({areaId}) {
 
 function BuildFarmButton() {
   const {state, dispatch} = useContext(ReducerDispatch);
-  const selectedItem = getSelectedItem(state);
-  if (selectedItem.ap < 1 || selectedItem.playerId !== state.activePlayerId) {
+
+  if (selectedItemHasAp(state)) {
     return null;
   }
   const handleBuildFarm = () => {
@@ -86,9 +95,7 @@ function BuildFarmButton() {
 
 function PlantCropButton() {
   const {state, dispatch} = useContext(ReducerDispatch);
-  const selectedItem = getSelectedItem(state);
-  if (selectedItem.ap < 1
-    || selectedItem.playerId !== state.activePlayerId
+  if (selectedItemHasAp(state)
     || !state.items.some((item) => item.type === 'farm' && item.builderId === state.selectedId)) {
     return null;
   }
@@ -103,6 +110,25 @@ function PlantCropButton() {
   return (<Button color='default' onClick={handlePlantCrop}>PlantCrop</Button>);
 }
 
+function HarvestCropButton() {
+  const {state, dispatch} = useContext(ReducerDispatch);
+  const selectedItem = getSelectedItem(state);
+  const target = getItemsByXY(selectedItem, state.items).find((item) => item.type === 'crop');
+  if (selectedItemHasAp(state) || !target) {
+    return null;
+  }
+  const handlePlantCrop = () => {
+    dispatch({
+      type: 'HARVEST_CROP',
+      payload: {
+        agentId: state.selectedId,
+        targetId: target.id,
+      }
+    })
+  };
+  return (<Button color='default' onClick={handlePlantCrop}>HarvestCrop</Button>);
+}
+
 export default function Orders() {
   const {state} = useContext(ReducerDispatch);
   return <div>
@@ -115,6 +141,7 @@ export default function Orders() {
         <DefendButton areaId={5}/>
         <BuildFarmButton/>
         <PlantCropButton/>
+        <HarvestCropButton/>
       </CardContent>
     </Card>
   </div>

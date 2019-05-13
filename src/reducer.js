@@ -5,6 +5,7 @@ import {
   getItemsByPlayer,
   inRange,
   isPlayer,
+  removeItemById,
   updateItemById,
   updateItems
 } from "./itemsUtil";
@@ -45,7 +46,9 @@ const createBuilding = (builderId, type, state) => {
 };
 
 export default (state, action) => {
-  console.log('Action type: ' + action.type);
+  console.log('Action');
+  console.log(action);
+  console.log(state);
   const {payload} = action;
   switch (action.type) {
     case 'END_TURN': {
@@ -70,7 +73,6 @@ export default (state, action) => {
       const consumedState = consumeAp(action, state);
       const attacker = getItemById(agentId, consumedState.items);
       const target = getItemById(targetId, consumedState.items);
-      console.log('Attacker: ' + agentId + ' Target: ' + targetId);
       if (inRange(attacker, target)) {
         console.log('target in range!');
         return updateItemById({...target, hp: target.hp - 1}, consumedState);
@@ -84,8 +86,6 @@ export default (state, action) => {
       const consumedState = consumeAp(action, state);
       const defender = getItemById(agentId, consumedState.items);
       const area = getItemById(areaId, consumedState.items);
-
-      console.log('Defend: ' + agentId + ' Area: ' + areaId);
       const target = getEnemyItems(state).find((enemy) => inRange(defender, enemy));
       if (!!target) {
         console.log('target in range!');
@@ -100,6 +100,10 @@ export default (state, action) => {
     }
     case 'PLANT_CROP': {
       return createBuilding(payload.agentId, 'crop', consumeAp(action, state));
+    }
+    case 'HARVEST_CROP': {
+      const consumedState = consumeAp(action, state);
+      return {...consumedState, items: removeItemById(payload.targetId, consumedState.items),}
     }
     default:
       return state;
