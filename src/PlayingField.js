@@ -18,6 +18,7 @@ const typeIcons = {
   rock: 'landscape',
   dead: 'airline_seat_flat',
   farm: 'home',
+  crop: 'local_florist',
 
 };
 

@@ -40,7 +40,7 @@ function AttackButton({targetId}) {
     dispatch({
       type: 'ATTACK',
       payload: {
-        attackerId: state.selectedId,
+        agentId: state.selectedId,
         targetId
       }
     })
@@ -59,7 +59,7 @@ function DefendButton({areaId}) {
     dispatch({
       type: 'DEFEND',
       payload: {
-        defenderId: state.selectedId,
+        agentId: state.selectedId,
         areaId: areaId,
       }
     })
@@ -77,11 +77,30 @@ function BuildFarmButton() {
     dispatch({
       type: 'BUILD_FARM',
       payload: {
-        builderId: state.selectedId,
+        agentId: state.selectedId,
       }
     })
   };
   return (<Button color='default' onClick={handleBuildFarm}>Build farm</Button>);
+}
+
+function PlantCropButton() {
+  const {state, dispatch} = useContext(ReducerDispatch);
+  const selectedItem = getSelectedItem(state);
+  if (selectedItem.ap < 1
+    || selectedItem.playerId !== state.activePlayerId
+    || !state.items.some((item) => item.type === 'farm' && item.builderId === state.selectedId)) {
+    return null;
+  }
+  const handlePlantCrop = () => {
+    dispatch({
+      type: 'PLANT_CROP',
+      payload: {
+        agentId: state.selectedId,
+      }
+    })
+  };
+  return (<Button color='default' onClick={handlePlantCrop}>PlantCrop</Button>);
 }
 
 export default function Orders() {
@@ -95,6 +114,7 @@ export default function Orders() {
         }
         <DefendButton areaId={5}/>
         <BuildFarmButton/>
+        <PlantCropButton/>
       </CardContent>
     </Card>
   </div>

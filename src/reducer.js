@@ -8,7 +8,7 @@ import {
   updateItemById,
   updateItems
 } from "./itemsUtil";
-import {moveFn, toward} from "./movement";
+import {move, toward} from "./movement";
 
 const nextPlayer = (activePlayerId) => {
   const index = PLAYERS.findIndex((id) => id === activePlayerId);
@@ -27,14 +27,28 @@ const isLoser = (playerId, items) => {
   return getItemsByPlayer(playerId, items).every((item) => item.hp <= 0);
 };
 
+const consumeAp = (action, state) => {
+  const selectedItem = {...getItemById(action.payload.agentId, state.items), ap: 0, action};
+  return updateItemById(selectedItem, state);
+};
+
+const createBuilding = (builderId, type, state) => {
+  const builder = getItemById(builderId, state.items);
+  const building = {
+    id: state.items.length,
+    builderId,
+    x: builder.x,
+    y: builder.y,
+    type,
+  };
+  return {...state, items: [...state.items, building]}
+};
+
 export default (state, action) => {
   console.log('Action type: ' + action.type);
-  const {items} = state;
   const {payload} = action;
   switch (action.type) {
     case 'END_TURN': {
-      console.log(`Player ${payload} ended the turn`);
-
       return updateItems((item) => isPlayer(payload, item), (item) => ({
         ...item,
         ap: 1
@@ -49,56 +63,43 @@ export default (state, action) => {
       return generateState();
     }
     case 'SET_SELECTED': {
-      console.log('reducer set selected' + payload);
       return {...state, selectedId: payload};
     }
     case 'ATTACK': {
-      const {attackerId, targetId} = payload;
-      const attacker = {...getItemById(attackerId, items), ap: 0, action};
-      const target = getItemById(targetId, items);
-
-      const apConsumedState = updateItemById(attacker, state);
-      console.log('Attacker: ' + attackerId + ' Target: ' + targetId);
-
+      const {agentId, targetId} = payload;
+      const consumedState = consumeAp(action, state);
+      const attacker = getItemById(agentId, consumedState.items);
+      const target = getItemById(targetId, consumedState.items);
+      console.log('Attacker: ' + agentId + ' Target: ' + targetId);
       if (inRange(attacker, target)) {
         console.log('target in range!');
-        return updateItemById({...target, hp: target.hp - 1}, apConsumedState);
+        return updateItemById({...target, hp: target.hp - 1}, consumedState);
       } else {
         console.log('target not in range!');
-        const direction = toward(attacker, target);
-        console.log('move in direction xy:' + direction.x + direction.y);
-        return updateItemById(moveFn(attacker, direction), apConsumedState);
+        return updateItemById(move(attacker, toward(target)), consumedState);
       }
     }
     case 'DEFEND': {
-      const {defenderId, areaId} = payload;
-      const defender = {...getItemById(defenderId, items), ap: 0, action};
-      const area = getItemById(areaId, items);
+      const {agentId, areaId} = payload;
+      const consumedState = consumeAp(action, state);
+      const defender = getItemById(agentId, consumedState.items);
+      const area = getItemById(areaId, consumedState.items);
 
-      const apConsumedState = updateItemById(defender, state);
-      console.log('Defend: ' + defenderId + ' Area: ' + areaId);
+      console.log('Defend: ' + agentId + ' Area: ' + areaId);
       const target = getEnemyItems(state).find((enemy) => inRange(defender, enemy));
       if (!!target) {
         console.log('target in range!');
-        return updateItemById({...target, hp: target.hp - 1}, apConsumedState);
+        return updateItemById({...target, hp: target.hp - 1}, consumedState);
       } else {
         console.log('target not in range!');
-        const direction = toward(defender, area);
-        console.log('move in direction xy:' + direction.x + direction.y);
-        return updateItemById(moveFn(defender, direction), apConsumedState);
+        return updateItemById(move(defender, toward(area)), consumedState);
       }
     }
     case 'BUILD_FARM': {
-      const {builderId} = payload;
-      const builder = getItemById(builderId, items);
-      const farm = {
-        id: items.length,
-        builderId,
-        x: builder.x,
-        y: builder.y,
-        type: 'farm',
-      };
-      return {...state, items: [...items, farm]}
+      return createBuilding(payload.agentId, 'farm', consumeAp(action, state));
+    }
+    case 'PLANT_CROP': {
+      return createBuilding(payload.agentId, 'crop', consumeAp(action, state));
     }
     default:
       return state;
