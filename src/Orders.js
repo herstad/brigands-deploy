@@ -21,6 +21,10 @@ const selectedItemHasAp = (state) => {
   return selectedItem.ap < 1 || selectedItem.playerId !== state.activePlayerId;
 };
 
+const farmerHasFarm = (state) => {
+  return !state.items.some((item) => item.type === 'farm' && item.builderId === state.selectedId);
+};
+
 const getButtonColor = (type, state) => isSelectedAction(type, state) ? 'primary' : 'default';
 
 function TurnButton() {
@@ -79,7 +83,7 @@ function DefendButton({areaId}) {
 function BuildFarmButton() {
   const {state, dispatch} = useContext(ReducerDispatch);
 
-  if (selectedItemHasAp(state)) {
+  if (selectedItemHasAp(state) || !farmerHasFarm(state)) {
     return null;
   }
   const handleBuildFarm = () => {
@@ -93,10 +97,10 @@ function BuildFarmButton() {
   return (<Button color='default' onClick={handleBuildFarm}>Build farm</Button>);
 }
 
+
 function PlantCropButton() {
   const {state, dispatch} = useContext(ReducerDispatch);
-  if (selectedItemHasAp(state)
-    || !state.items.some((item) => item.type === 'farm' && item.builderId === state.selectedId)) {
+  if (selectedItemHasAp(state) || farmerHasFarm(state)) {
     return null;
   }
   const handlePlantCrop = () => {

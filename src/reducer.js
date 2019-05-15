@@ -1,4 +1,4 @@
-import {generateState, PLAYERS} from "./stateGenerator";
+import {generateId, generateState, PLAYERS} from "./stateGenerator";
 import {
   getEnemyItems,
   getItemById,
@@ -36,7 +36,7 @@ const consumeAp = (action, state) => {
 const createBuilding = (builderId, type, state) => {
   const builder = getItemById(builderId, state.items);
   const building = {
-    id: state.items.length,
+    id: generateId(),
     builderId,
     x: builder.x,
     y: builder.y,

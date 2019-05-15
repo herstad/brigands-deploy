@@ -6,28 +6,36 @@ export const generateState = () => {
     turn: 0,
     activePlayerId: PLAYERS[0],
     items: generateItems(),
-    selectedId: 0,
+    selectedId: 1,
     winner: undefined,
-    events: [{type: 'ENEMY_SPOTTED', itemId: 1}, {type:'GAME_STARTED'}],
+    events: [{type: 'ENEMY_SPOTTED', itemId: 1}, {type: 'GAME_STARTED'}],
   };
+};
+
+let itemId = 0;
+
+export const generateId = () => {
+  itemId++;
+  console.log('Generated id: ' + itemId);
+  return itemId;
 };
 
 const generateItems = (size = 10) => {
   const items = [
-    {id: 0, hp: 5, type: 'x', playerId: 'human', ap: 1},
-    {id: 1, hp: 5, type: 'o', playerId: 'ai', ap: 1},
-    {id: 2,type: 'tree'},
-    {id: 3,type: 'tree'},
-    {id: 4,type: 'tree'},
-    {id: 5,type: 'tree'},
-    {id: 6,type: 'tree'},
-    {id: 7,type: 'tree'},
-    {id: 8,type: 'rock'},
-    {id: 9,type: 'rock'},
-    {id: 10,type: 'rock'},
-    {id: 11,type: 'water'},
-    {id: 12,type: 'water'},
-    {id: 13,type: 'water'},
+    {id: generateId(), hp: 5, type: 'x', playerId: 'human', ap: 1},
+    {id: generateId(), hp: 5, type: 'o', playerId: 'ai', ap: 1},
+    {id: generateId(), type: 'tree'},
+    {id: generateId(), type: 'tree'},
+    {id: generateId(), type: 'tree'},
+    {id: generateId(), type: 'tree'},
+    {id: generateId(), type: 'tree'},
+    {id: generateId(), type: 'tree'},
+    {id: generateId(), type: 'rock'},
+    {id: generateId(), type: 'rock'},
+    {id: generateId(), type: 'rock'},
+    {id: generateId(), type: 'water'},
+    {id: generateId(), type: 'water'},
+    {id: generateId(), type: 'water'},
   ];
   return generatePosition(size, items);
 };
