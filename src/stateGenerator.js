@@ -2,13 +2,15 @@ export const PLAYERS = ['human', 'ai'];
 
 export const generateState = () => {
   console.log("generate state");
+
+  const items = generateItems();
   return {
     turn: 0,
     activePlayerId: PLAYERS[0],
-    items: generateItems(),
-    selectedId: 1,
+    items,
+    selectedId: items[0].id,
     winner: undefined,
-    events: [{type: 'ENEMY_SPOTTED', itemId: 1}, {type: 'GAME_STARTED'}],
+    events: [{type: 'ENEMY_SPOTTED', itemId: items[1].id}, {type: 'GAME_STARTED'}],
   };
 };
 
@@ -18,6 +20,14 @@ export const generateId = () => {
   itemId++;
   console.log('Generated id: ' + itemId);
   return itemId;
+};
+
+const generateDefaultItems = (size) => {
+  const defaultValues = [];
+  for (let i = 0; i < size; i++) {
+    defaultValues.push({id: generateId(), type: 'grass'});
+  }
+  return defaultValues;
 };
 
 const generateItems = (size = 10) => {
@@ -37,7 +47,8 @@ const generateItems = (size = 10) => {
     {id: generateId(), type: 'water'},
     {id: generateId(), type: 'water'},
   ];
-  return generatePosition(size, items);
+
+  return generatePosition(size, items.concat(generateDefaultItems(size * size - items.length)));
 };
 
 const generatePosition = (size, items) => {

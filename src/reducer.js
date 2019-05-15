@@ -18,8 +18,6 @@ const nextPlayer = (activePlayerId) => {
 
 const nextTurn = (turn, activePlayerId) => PLAYERS.slice(-1)[0] === activePlayerId ? turn + 1 : turn;
 
-const printIs = (state) => state.items.map(item => console.log('item' + item.x, item.y, item.ap));
-
 const getWinner = (state) => {
   return isLoser('ai', state.items) ? 'human' : isLoser('human', state.items) ? 'ai' : undefined;
 };
