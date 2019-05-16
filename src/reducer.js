@@ -2,6 +2,7 @@ import {generateId, generateState, PLAYERS} from "./stateGenerator";
 import {
   getEnemyItems,
   getItemById,
+  getItemByXYAndType,
   getItemsByPlayer,
   inRange,
   isPlayer,
@@ -33,6 +34,8 @@ const consumeAp = (action, state) => {
 
 const createBuilding = (builderId, type, state) => {
   const builder = getItemById(builderId, state.items);
+  const target = getItemByXYAndType(state.items)(builder)('grass');
+  const clearedItems = removeItemById(target.id, state.items);
   const building = {
     id: generateId(),
     builderId,
@@ -40,7 +43,7 @@ const createBuilding = (builderId, type, state) => {
     y: builder.y,
     type,
   };
-  return {...state, items: [...state.items, building]}
+  return {...state, items: [...clearedItems, building]}
 };
 
 export default (state, action) => {
@@ -101,7 +104,17 @@ export default (state, action) => {
     }
     case 'HARVEST_CROP': {
       const consumedState = consumeAp(action, state);
-      return {...consumedState, items: removeItemById(payload.targetId, consumedState.items),}
+      const {x, y} = getItemById(payload.targetId, state.items);
+      const grass = {
+        id: generateId(),
+        x,
+        y,
+        type: 'grass',
+      };
+      return {
+        ...consumedState,
+        items: [...removeItemById(payload.targetId, consumedState.items), grass],
+      }
     }
     default:
       return state;

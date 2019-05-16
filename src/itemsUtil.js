@@ -5,7 +5,9 @@ export const matchPlayer = (playerId) => (item) => isPlayer(playerId, item);
 export const getSelectedItem = (state) => getItemById(state.selectedId, state.items);
 export const getItemById = (id, items) => items.find((item) => item.id === id);
 export const getItemsByPlayer = (playerId, items) => items.filter(matchPlayer(playerId));
-export const getItemsByXY = ({x, y}, items) => items.filter((item) => item.x === x && item.y === y);
+export const getItemsByXY = items => ({x, y}) => items.filter((item) => item.x === x && item.y === y);
+export const getItemByXYAndType = items => selectedItem => type => findItemByType(getItemsByXY(items)(selectedItem))(type);
+export const findItemByType = items => type => items.find(item => item.type === type);
 export const removeItemById = (id, items) => items.filter((item) => item.id !== id);
 export const getEnemyItems = (state) => {
   const otherPlayers = PLAYERS.filter((player) => state.activePlayerId !== player);

@@ -5,8 +5,8 @@ import Button from '@material-ui/core/Button';
 import {
   getEnemyItems,
   getItemById,
+  getItemByXYAndType,
   getItemsByPlayer,
-  getItemsByXY,
   getSelectedItem
 } from "./itemsUtil";
 import {ReducerDispatch} from "./App";
@@ -100,7 +100,9 @@ function BuildFarmButton() {
 
 function PlantCropButton() {
   const {state, dispatch} = useContext(ReducerDispatch);
-  if (selectedItemHasAp(state) || farmerHasFarm(state)) {
+  const selectedItem = getSelectedItem(state);
+  const target = getItemByXYAndType(state.items)(selectedItem)('grass');
+  if (selectedItemHasAp(state) || farmerHasFarm(state) || !target) {
     return null;
   }
   const handlePlantCrop = () => {
@@ -117,11 +119,11 @@ function PlantCropButton() {
 function HarvestCropButton() {
   const {state, dispatch} = useContext(ReducerDispatch);
   const selectedItem = getSelectedItem(state);
-  const target = getItemsByXY(selectedItem, state.items).find((item) => item.type === 'crop');
+  const target = getItemByXYAndType(state.items)(selectedItem)('crop');
   if (selectedItemHasAp(state) || !target) {
     return null;
   }
-  const handlePlantCrop = () => {
+  const handleHarvestCrop = () => {
     dispatch({
       type: 'HARVEST_CROP',
       payload: {
@@ -130,7 +132,7 @@ function HarvestCropButton() {
       }
     })
   };
-  return (<Button color='default' onClick={handlePlantCrop}>HarvestCrop</Button>);
+  return (<Button color='default' onClick={handleHarvestCrop}>HarvestCrop</Button>);
 }
 
 export default function Orders() {

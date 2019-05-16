@@ -31,9 +31,12 @@ const generateDefaultItems = (size) => {
 };
 
 const generateItems = (size = 10) => {
-  const items = [
+  const units = [
     {id: generateId(), hp: 5, type: 'x', playerId: 'human', ap: 1},
     {id: generateId(), hp: 5, type: 'o', playerId: 'ai', ap: 1},
+  ];
+
+  const items = [
     {id: generateId(), type: 'tree'},
     {id: generateId(), type: 'tree'},
     {id: generateId(), type: 'tree'},
@@ -48,10 +51,11 @@ const generateItems = (size = 10) => {
     {id: generateId(), type: 'water'},
   ];
 
-  return generatePosition(size, items.concat(generateDefaultItems(size * size - items.length)));
+  const genPos = generatePosition(size);
+  return genPos(units).concat(genPos(items.concat(generateDefaultItems(size * size - items.length))));
 };
 
-const generatePosition = (size, items) => {
+const generatePosition = (size) => (items) => {
   const points = generateRandomMatrix(size);
   return items.map((item) => ({...item, ...points.shift()}));
 };
