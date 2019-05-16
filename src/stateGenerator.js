@@ -18,7 +18,6 @@ let itemId = 0;
 
 export const generateId = () => {
   itemId++;
-  console.log('Generated id: ' + itemId);
   return itemId;
 };
 

@@ -8,7 +8,6 @@ import {ReducerDispatch} from "./App";
 
 function UnitCard() {
   const {selectedId, items} = useContext(ReducerDispatch).state;
-  console.log("InfoPane, selectedId:" + selectedId);
   if (selectedId === undefined) {
     return null;
   }

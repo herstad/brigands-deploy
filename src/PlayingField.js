@@ -7,7 +7,6 @@ import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
 import {ReducerDispatch} from "./App";
 
-
 const typeIcons = {
   o: 'android',
   x: 'directions_walk',
@@ -40,11 +39,9 @@ const createAtPosition = (items = [], x, y) => {
   return items.find((item) => item.x === x && item.y === y) || {x: x, y: y, type: '.'}
 };
 
-
 function PlayingFieldCell({elem}) {
   const {dispatch} = useContext(ReducerDispatch);
   const handleSetSelected = (id) => () => {
-    console.log('set selected' + id);
     dispatch({type: 'SET_SELECTED', payload: id});
   };
   return (
