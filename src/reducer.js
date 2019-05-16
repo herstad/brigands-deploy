@@ -47,9 +47,12 @@ const createBuilding = (builderId, type, state) => {
     x: builder.x,
     y: builder.y,
     type,
+    createdTurn: state.turn,
   };
   return {...state, items: [...clearedItems, building]}
 };
+
+const plantedShouldGrow = turn => item => item.type === 'planted' && item.createdTurn + 5 <= turn;
 
 export default (state, action) => {
   console.log('Action');
@@ -58,15 +61,15 @@ export default (state, action) => {
   const {payload} = action;
   switch (action.type) {
     case 'END_TURN': {
-      return updateItems((item) => isPlayer(payload, item), (item) => ({
-        ...item,
-        ap: 1
-      }), {
+      const apItems = updateItems((item) => isPlayer(payload, item))({ap: 1})(state.items);
+      const items = updateItems(plantedShouldGrow(state.turn))({type: 'crop',})(apItems);
+      return {
         ...state,
+        items,
         turn: nextTurn(state.turn, state.activePlayerId),
         activePlayerId: nextPlayer(state.activePlayerId),
         winner: getWinner(state)
-      });
+      };
     }
     case 'RESTART': {
       return generateState();
@@ -105,7 +108,7 @@ export default (state, action) => {
       return createBuilding(payload.agentId, 'farm', consumeAp(action, state));
     }
     case 'PLANT_CROP': {
-      return createBuilding(payload.agentId, 'crop', consumeAp(action, state));
+      return createBuilding(payload.agentId, 'planted', consumeAp(action, state));
     }
     case 'HARVEST_CROP': {
       const consumedState = consumeAp(action, state);

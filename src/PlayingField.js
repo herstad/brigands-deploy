@@ -19,6 +19,7 @@ const typeIcons = {
   dead: 'airline_seat_flat',
   farm: 'home',
   crop: 'local_florist',
+  planted: 'minimize',
 
 };
 

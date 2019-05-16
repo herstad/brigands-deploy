@@ -21,17 +21,16 @@ export const updateItemById = (updatedItem, state) => {
   return ({...state, items});
 };
 
-export const updateItems = (predicate, updateFn, state) => {
-  const items = state.items.map(updateItemFn(predicate, updateFn, state));
-  return ({...state, items});
+export const updateItems = predicate => updatedItem => items => {
+  return items.map(updateItemFn(predicate)(updatedItem));
 };
 
-export const updateItemFn = (predicate, updateFn) => {
-  return el => (predicate(el) ? {...el, ...updateFn(el)} : el);
+export const updateItemFn = predicate => updatedItem => {
+  return el => (predicate(el) ? {...el, ...updatedItem} : el);
 };
 
 export const updateItemByIdFn = (updatedItem) => {
-  return el => (updatedItem.id === el.id ? {...el, ...updatedItem} : el);
+  return updateItemFn(el => updatedItem.id === el.id)(updatedItem);
 };
 
 export const matchId = (id) => {
