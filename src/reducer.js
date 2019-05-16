@@ -7,6 +7,7 @@ import {
   inRange,
   isPlayer,
   removeItemById,
+  replaceItems,
   updateItemById,
   updateItems
 } from "./itemsUtil";
@@ -62,13 +63,19 @@ export default (state, action) => {
   switch (action.type) {
     case 'END_TURN': {
       const apItems = updateItems((item) => isPlayer(payload, item))({ap: 1})(state.items);
-      const items = updateItems(plantedShouldGrow(state.turn))({type: 'crop',})(apItems);
+      const grownCrops = apItems.filter(plantedShouldGrow(state.turn));
+      const newCrops = updateItems(plantedShouldGrow(state.turn))({type: 'crop',})(grownCrops);
+      console.log(grownCrops);
+      console.log(newCrops);
+      const items = replaceItems(apItems)(newCrops);
+      const events = newCrops.map((item) => ({type: 'CROP_GROWN', itemId: item.id}));
       return {
         ...state,
         items,
         turn: nextTurn(state.turn, state.activePlayerId),
         activePlayerId: nextPlayer(state.activePlayerId),
-        winner: getWinner(state)
+        winner: getWinner(state),
+        events,
       };
     }
     case 'RESTART': {

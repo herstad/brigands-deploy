@@ -21,12 +21,20 @@ export const updateItemById = (updatedItem, state) => {
   return ({...state, items});
 };
 
+export const replaceItems = items => replacements => {
+  return items.map(obj => replacements.find(o => o.id === obj.id) || obj);
+};
+
 export const updateItems = predicate => updatedItem => items => {
   return items.map(updateItemFn(predicate)(updatedItem));
 };
 
 export const updateItemFn = predicate => updatedItem => {
   return el => (predicate(el) ? {...el, ...updatedItem} : el);
+};
+
+export const replaceItemFn = predicate => updatedItem => {
+  return el => (predicate(el) ? updatedItem : el);
 };
 
 export const updateItemByIdFn = (updatedItem) => {
