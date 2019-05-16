@@ -28,7 +28,12 @@ const isLoser = (playerId, items) => {
 };
 
 const consumeAp = (action, state) => {
-  const selectedItem = {...getItemById(action.payload.agentId, state.items), ap: 0, action};
+  const selectedItem = {
+    ...getItemById(action.payload.agentId, state.items),
+    ap: 0,
+    action,
+    condition: action.payload.condition
+  };
   return updateItemById(selectedItem, state);
 };
 

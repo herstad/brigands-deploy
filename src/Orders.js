@@ -18,11 +18,11 @@ const isSelectedAction = (type, state) => {
 
 const selectedItemHasAp = (state) => {
   const selectedItem = getSelectedItem(state);
-  return selectedItem.ap < 1 || selectedItem.playerId !== state.activePlayerId;
+  return selectedItem.ap > 0 && selectedItem.playerId === state.activePlayerId;
 };
 
 const farmerHasFarm = (state) => {
-  return !state.items.some((item) => item.type === 'farm' && item.builderId === state.selectedId);
+  return state.items.some((item) => item.type === 'farm' && item.builderId === state.selectedId);
 };
 
 const getButtonColor = (type, state) => isSelectedAction(type, state) ? 'primary' : 'default';
@@ -33,7 +33,7 @@ function TurnButton() {
   const handleEndTurn = (playerId) => () => {
     getItemsByPlayer(playerId, items)
       .filter((item) => item.action && item.ap)
-      .forEach((item) => dispatch(item.action));
+      .forEach((item) => item.condition(state) ? dispatch(item.action) : undefined);
     dispatch({
       type: 'END_TURN',
       payload: playerId
@@ -46,7 +46,8 @@ function TurnButton() {
 
 function AttackButton({targetId}) {
   const {state, dispatch} = useContext(ReducerDispatch);
-  if (selectedItemHasAp(state)) {
+  const condition = selectedItemHasAp;
+  if (!condition(state)) {
     return null;
   }
   const color = getButtonColor('ATTACK', state);
@@ -55,7 +56,8 @@ function AttackButton({targetId}) {
       type: 'ATTACK',
       payload: {
         agentId: state.selectedId,
-        targetId
+        targetId,
+        condition,
       }
     })
   };
@@ -64,7 +66,8 @@ function AttackButton({targetId}) {
 
 function DefendButton({areaId}) {
   const {state, dispatch} = useContext(ReducerDispatch);
-  if (selectedItemHasAp(state)) {
+  const condition = selectedItemHasAp;
+  if (!condition(state)) {
     return null;
   }
   const color = getButtonColor('DEFEND', state);
@@ -74,6 +77,7 @@ function DefendButton({areaId}) {
       payload: {
         agentId: state.selectedId,
         areaId: areaId,
+        condition,
       }
     })
   };
@@ -83,7 +87,12 @@ function DefendButton({areaId}) {
 function BuildFarmButton() {
   const {state, dispatch} = useContext(ReducerDispatch);
 
-  if (selectedItemHasAp(state) || !farmerHasFarm(state)) {
+  const condition = state => {
+    return selectedItemHasAp(state)
+      && !farmerHasFarm(state)
+      && getItemByXYAndType(state.items)(getSelectedItem(state))('grass');
+  };
+  if (!condition(state)) {
     return null;
   }
   const handleBuildFarm = () => {
@@ -91,6 +100,7 @@ function BuildFarmButton() {
       type: 'BUILD_FARM',
       payload: {
         agentId: state.selectedId,
+        condition,
       }
     })
   };
@@ -100,9 +110,12 @@ function BuildFarmButton() {
 
 function PlantCropButton() {
   const {state, dispatch} = useContext(ReducerDispatch);
-  const selectedItem = getSelectedItem(state);
-  const target = getItemByXYAndType(state.items)(selectedItem)('grass');
-  if (selectedItemHasAp(state) || farmerHasFarm(state) || !target) {
+  const condition = state => {
+    return selectedItemHasAp(state)
+      && farmerHasFarm(state)
+      && getItemByXYAndType(state.items)(getSelectedItem(state))('grass');
+  };
+  if (!condition(state)) {
     return null;
   }
   const handlePlantCrop = () => {
@@ -110,6 +123,7 @@ function PlantCropButton() {
       type: 'PLANT_CROP',
       payload: {
         agentId: state.selectedId,
+        condition,
       }
     })
   };
@@ -120,7 +134,12 @@ function HarvestCropButton() {
   const {state, dispatch} = useContext(ReducerDispatch);
   const selectedItem = getSelectedItem(state);
   const target = getItemByXYAndType(state.items)(selectedItem)('crop');
-  if (selectedItemHasAp(state) || !target) {
+  const condition = state => {
+    const selectedItem = getSelectedItem(state);
+    const target = getItemByXYAndType(state.items)(selectedItem)('crop');
+    return selectedItemHasAp(state) && !!target;
+  };
+  if (!condition(state)) {
     return null;
   }
   const handleHarvestCrop = () => {
@@ -129,6 +148,7 @@ function HarvestCropButton() {
       payload: {
         agentId: state.selectedId,
         targetId: target.id,
+        condition,
       }
     })
   };
