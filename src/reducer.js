@@ -29,12 +29,18 @@ const isLoser = (playerId, items) => {
 };
 
 const consumeAp = (action, state) => {
+  const {condition} = action.payload;
   const selectedItem = {
     ...getItemById(action.payload.agentId, state.items),
     ap: 0,
     action,
-    condition: action.payload.condition
+    condition,
+
   };
+  if (!!selectedItem.behaviorTraining) {
+    const conditionalAction = {action, condition};
+    selectedItem.behaviorTraining.conditionalActions.push(conditionalAction);
+  }
   return updateItemById(selectedItem, state);
 };
 
@@ -128,6 +134,13 @@ export default (state, action) => {
         ...consumedState,
         items: [...removeItemById(payload.targetId, consumedState.items), grass],
       }
+    }
+    case 'TRAIN_EVENT': {
+      const {agentId, event} = payload;
+      return updateItemById({
+        id: agentId,
+        behaviorTraining: {name: 'farmer', eventType: event.type, conditionalActions: []}
+      }, state);
     }
     default:
       return state;
