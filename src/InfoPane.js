@@ -15,7 +15,7 @@ function UnitCard() {
   const {id, playerId, x, y, hp, ap, type} = getItemById(selectedId, items);
   const maxHp = 5;
   const relativeHp = hp / maxHp * 100;
-  const defaultEvent = {type:'DEFAULT_EVENT', itemId: selectedId};
+  const defaultEvent = {type: 'DEFAULT_EVENT', itemId: selectedId};
   return (
     <Card>
       <CardContent>
@@ -28,6 +28,7 @@ function UnitCard() {
         <Typography>type:{type}</Typography>
         <LinearProgress variant="determinate" value={relativeHp}/>
         <TrainEventButton event={defaultEvent}/>
+        <FinishTrainEventButton/>
       </CardContent>
     </Card>
   );
@@ -48,7 +49,23 @@ function TrainEventButton({event}) {
     })
   };
   return (<Button color='default' onClick={handleTrainEvent}>Train Default Behavior</Button>);
+}
 
+function FinishTrainEventButton() {
+  const {state, dispatch} = useContext(ReducerDispatch);
+  if (state.selectedId === undefined) {
+    return null;
+  }
+  const handleTrainEvent = () => {
+    dispatch({
+      type: 'FINISH_TRAIN_EVENT',
+      payload: {
+        agentId: state.selectedId,
+      }
+    })
+  };
+  return (
+    <Button color='default' onClick={handleTrainEvent}>Finish train Default Behavior</Button>);
 }
 
 function EventCard({event}) {

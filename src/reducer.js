@@ -37,7 +37,7 @@ const consumeAp = (action, state) => {
     condition,
 
   };
-  if (!!selectedItem.behaviorTraining) {
+  if (!!selectedItem.training) {
     const conditionalAction = {action, condition};
     selectedItem.behaviorTraining.conditionalActions.push(conditionalAction);
   }
@@ -139,8 +139,28 @@ export default (state, action) => {
       const {agentId, event} = payload;
       return updateItemById({
         id: agentId,
-        behaviorTraining: {name: 'farmer', eventType: event.type, conditionalActions: []}
+        behaviorTraining: {name: 'farmer', eventType: event.type, conditionalActions: []},
+        training: true,
       }, state);
+    }
+    case 'FINISH_TRAIN_EVENT': {
+      const {agentId} = payload;
+      const agent = getItemById(agentId, state.items);
+      const behavior = state.behaviors[agent.behaviorTraining.name] || {};
+      const updatedBehavior = {
+        ...behavior,
+        [agent.behaviorTraining.eventType]: {conditionalActions: agent.behaviorTraining.conditionalActions},
+      };
+      const updatedBehaviorState = {
+        ...state,
+        behaviors: {...state.behaviors, [agent.behaviorTraining.name]: updatedBehavior}
+      };
+      return updateItemById({
+        ...agent,
+        behaviorTraining: {},
+        training: false,
+      }, updatedBehaviorState);
+
     }
     default:
       return state;

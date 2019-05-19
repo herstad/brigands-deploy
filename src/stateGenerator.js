@@ -11,6 +11,8 @@ export const generateState = () => {
     selectedId: items[0].id,
     winner: undefined,
     events: [{type: 'ENEMY_SPOTTED', itemId: items[1].id}, {type: 'GAME_STARTED'}],
+    behaviors: {},
+    training: false,
   };
 };
 
